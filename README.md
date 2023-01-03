@@ -7,8 +7,8 @@ KaTool (卡托) - 一款拥有七牛云文件处理一款拥有七牛云、IP工
 katool:
   # 七牛云配置 所有值都必须存在,没有的话留空,不能缺
   qiniu:
-    accessKey: #你的七牛云ak
-    secretKey: #你的七牛云sk
+    accessKey: #你的七牛云accessKey
+    secretKey: #你的七牛云secretKey
     # 对象储存
     bucket: # 空间名称
     zone: # 存储区域
