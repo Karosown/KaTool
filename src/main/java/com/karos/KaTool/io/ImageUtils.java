@@ -15,6 +15,7 @@ import cn.hutool.core.img.ImgUtil;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Base64Utils;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.io.*;
 import java.net.MalformedURLException;
@@ -53,9 +54,16 @@ public class ImageUtils {
         return encode;
     }
 
+    /**
+     * 将图片放到输出流对象
+     * @param src
+     * @param os
+     * @throws MalformedURLException
+     */
     public static void img2fileToOutputStream(String src,OutputStream os) throws MalformedURLException {
         URL url=new URL(src);
         Image image=ImgUtil.getImage(url);
+//        Image image= ImageIO.read(url);
         ImgUtil.write(image,ImgUtil.IMAGE_TYPE_PNG, os);
     }
 }
