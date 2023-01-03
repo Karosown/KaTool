@@ -3,12 +3,12 @@
  *
  * @ClassName: IpUtils
  * @Description:
- * @author: 巫宗霖
+ * @author: Karos
  * @date: 2022/12/18 22:41
  * @Blog: https://www.wzl1.top/
  */
 
-package com.karos.KaTools.ipuilts;
+package com.karos.KaTool.ipuilts;
 
 import org.springframework.stereotype.Component;
 

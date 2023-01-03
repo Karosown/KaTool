@@ -3,12 +3,12 @@
  *
  * @ClassName: FileUtils
  * @Description:
- * @author: 巫宗霖
+ * @author: Karos
  * @date: 2023/1/2 1:52
  * @Blog: https://www.wzl1.top/
  */
 
-package com.karos.KaTools.io;
+package com.karos.KaTool.io;
 
 import java.io.File;
 import java.io.IOException;

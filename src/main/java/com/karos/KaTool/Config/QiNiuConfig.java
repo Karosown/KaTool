@@ -8,7 +8,7 @@
  * @Blog: https://www.wzl1.top/
  */
 
-package com.karos.KaTools.Config;
+package com.karos.KaTool.Config;
 
 import com.google.gson.Gson;
 import com.qiniu.common.Zone;
@@ -28,11 +28,11 @@ import org.springframework.stereotype.Component;
 @Configuration("QiNiuConfig")
 @Component
 @ToString
-@ConfigurationProperties("katools.qiniu")
+@ConfigurationProperties("Katool.qiniu")
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@ComponentScan("com.karos.KaTools.*")
+@ComponentScan("com.karos.KaTool.*")
 public class QiNiuConfig {
     /**
      * ak

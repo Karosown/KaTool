@@ -1,3 +1,7 @@
 spring:
     application:
+<<<<<<< HEAD
         name: KaTools
+=======
+        name: Katool
+>>>>>>> cbcd847 (Initial commit)

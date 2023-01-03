@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.karos.KaTools.Config.QiNiuConfig
+com.karos.KaTool.Config.QiNiuConfig

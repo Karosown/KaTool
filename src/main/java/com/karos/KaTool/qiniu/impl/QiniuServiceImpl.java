@@ -2,15 +2,15 @@
  * Title
  *
  * @ClassName: QiniuServiceImpl
- * @Description:
- * @author: 巫宗霖
+ * @Description:七牛云服务实例
+ * @author: Karos
  * @date: 2022/12/13 21:55
  * @Blog: https://www.wzl1.top/
  */
 
-package com.karos.KaTools.qiniu.impl;
-import com.karos.KaTools.io.FileUtils;
-import com.karos.KaTools.qiniu.IQiniuService;
+package com.karos.KaTool.qiniu.impl;
+import com.karos.KaTool.io.FileUtils;
+import com.karos.KaTool.qiniu.IQiniuService;
 import com.qiniu.common.QiniuException;
 import com.qiniu.http.Response;
 import com.qiniu.storage.BucketManager;
@@ -42,12 +42,12 @@ public class QiniuServiceImpl implements IQiniuService, InitializingBean {
     @Autowired
     private Auth auth;
 
-    @Value("${katools.qiniu.bucket}")
+    @Value("${Katool.qiniu.bucket}")
     private String bucket;
 
-    @Value("${katools.qiniu.domain}")
+    @Value("${Katool.qiniu.domain}")
     private String domain;
-    @Value("${katools.qiniu.basedir}")
+    @Value("${Katool.qiniu.basedir}")
     private String basedir;
 
     /**

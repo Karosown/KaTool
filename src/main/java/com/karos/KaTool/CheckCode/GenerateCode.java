@@ -1,4 +1,4 @@
-package com.karos.KaTools.CheckCode;
+package com.karos.KaTool.CheckCode;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,7 +13,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
@@ -277,7 +276,7 @@ public class GenerateCode {
      * @return
      */
     public String touchTextCode(String key,int length){
-        String s=StrHex(new StringBuffer(key),new StringBuffer(salt+"Katools"));
+        String s=StrHex(new StringBuffer(key),new StringBuffer(salt+"Katool"));
         return getMD5Hex(s.substring(2,7)).substring(5,5+length).toUpperCase(Locale.ROOT);
     }
 
@@ -285,7 +284,7 @@ public class GenerateCode {
     private String StrHex(StringBuffer str, StringBuffer key){
         str.append(key+getTIMEstr());
         str.append(getMD5Hex(key.toString()));
-        return getMD5Hex(str.insert(str.length()>>1,"KaTools").toString());
+        return getMD5Hex(str.insert(str.length()>>1,"KaTool").toString());
     }
     //MD5加密
     private String getMD5Hex(String str){

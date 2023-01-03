@@ -3,12 +3,12 @@
  *
  * @ClassName: IImageUtil
  * @Description:
- * @author: 巫宗霖
+ * @author: Karos
  * @date: 2022/12/15 21:28
  * @Blog: https://www.wzl1.top/
  */
 
-package com.karos.KaTools.io;
+package com.karos.KaTool.io;
 
 
 import cn.hutool.core.img.ImgUtil;

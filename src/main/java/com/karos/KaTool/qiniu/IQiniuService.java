@@ -1,4 +1,4 @@
-package com.karos.KaTools.qiniu;
+package com.karos.KaTool.qiniu;
 
 import com.qiniu.common.QiniuException;
 

@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.Karos</groupId>
-    <artifactId>KaTools</artifactId>
+    <artifactId>KaTool</artifactId>
     <version>1.4.8</version>
-    <name>KaTools</name>
-    <description>KaTools</description>
+    <name>KaTool</name>
+    <description>KaTool - 一款拥有七牛云文件处理、IP工具、图片工具、图形验证码生成、随机验证码生成的Tools</description>
     <!-- https://mvnrepository.com/artifact/com.qiniu/qiniu-java-sdk -->
 
     <properties>
