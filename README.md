@@ -2,7 +2,7 @@
 ![SpringBoot-2.7.0](https://img.shields.io/badge/SpringBoot-2.7.0-green)
 ![Hutool-5.8.10](https://img.shields.io/badge/Hutool-5.8.10-green)
 # KaTool (卡托)
-KaTool (卡托) - 一款拥有七牛云文件处理一款拥有七牛云、IP工具、IO工具、图形验证码生成、随机验证码生成的Tool<br>
+KaTool (卡托) - 一款拥有七牛云文件处理一款拥有分布式锁、七牛云存储管理、IP工具、IO工具、图形验证码生成、随机验证码生成的Tool<br>
 
 **Tips：该Starter为个人项目使用，Starter制作仅满足于个人目前的开发需求，工具类和其他同类作品相比不全面望谅解，在图片写入OutputStream时，使用到了Hutool**
 ## Application.yml配置说明
