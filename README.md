@@ -19,6 +19,13 @@ katool:
     domain: # 访问域名
     basedir: # 文件存储根目录
 ```
+## Nginx配置
+Nginx反向代理后获取真实来源IP
+```Nginx.config-server
+proxy_set_header   X-Real-IP        $remote_addr;
+proxy_set_header   X-Real-Port      $remote_port;
+proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
+```
 ## Update
 v1.5.0<br>
 锁工具类-分布式锁实现，新增启动Banner<br>
@@ -39,11 +46,9 @@ v1.4.0<br>
 v1.3.5<br>
 Ip工具：避免Nginx反向代理，获得真实IP<br>
 Nginx-Config的server中加上<br>
-
-
 ```Nginx.config-server
 proxy_set_header   X-Real-IP        $remote_addr;
-proxy_set_header  X-Real-Port        $remote_port;
+proxy_set_header   X-Real-Port      $remote_port;
 proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
 ```
 <br>
