@@ -28,7 +28,7 @@ import org.springframework.stereotype.Component;
 @Configuration("QiNiuConfig")
 @Component
 @ToString
-@ConfigurationProperties("Katool.qiniu")
+@ConfigurationProperties("katool.qiniu")
 @AllArgsConstructor
 @NoArgsConstructor
 @Data

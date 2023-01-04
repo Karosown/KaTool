@@ -2,5 +2,4 @@ spring:
     application:
         name: Katool
     banner:
-        image:
-            location: banner.png
+        location: banner.ini

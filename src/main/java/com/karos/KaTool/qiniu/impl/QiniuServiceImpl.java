@@ -42,12 +42,12 @@ public class QiniuServiceImpl implements IQiniuService, InitializingBean {
     @Autowired
     private Auth auth;
 
-    @Value("${Katool.qiniu.bucket}")
+    @Value("${katool.qiniu.bucket}")
     private String bucket;
 
-    @Value("${Katool.qiniu.domain}")
+    @Value("${katool.qiniu.domain}")
     private String domain;
-    @Value("${Katool.qiniu.basedir}")
+    @Value("${katool.qiniu.basedir}")
     private String basedir;
 
     /**
