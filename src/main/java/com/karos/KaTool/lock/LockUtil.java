@@ -19,12 +19,16 @@ import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
 
 @Component
 @Scope("prototype")
 public class LockUtil {
         @Resource
         RedisTemplate redisTemplate;
+        private LockUtil(){
+
+        }
         //加锁
         public boolean DistributedLock(Object obj,Long exptime,TimeUnit timeUnit){
                 Boolean aBoolean = redisTemplate.opsForValue().setIfAbsent("Lock:"+obj.toString(), "1", exptime, timeUnit);

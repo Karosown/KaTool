@@ -27,6 +27,8 @@ proxy_set_header   X-Real-Port      $remote_port;
 proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
 ```
 ## Update
+v1.5.1<br>
+分布式锁单例模式优化
 v1.5.0<br>
 锁工具类-分布式锁实现，新增启动Banner<br>
 **Tips:使用锁工具类必须使用自动装配，我在工具类内部实现了单例模式**<br>
