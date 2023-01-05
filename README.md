@@ -27,6 +27,8 @@ proxy_set_header   X-Real-Port      $remote_port;
 proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
 ```
 ## Update
+v1.5.2<br>
+分布式锁优化
 v1.5.1<br>
 分布式锁单例模式优化
 v1.5.0<br>

@@ -31,6 +31,7 @@ public class LockUtil {
         }
         //加锁
         public boolean DistributedLock(Object obj,Long exptime,TimeUnit timeUnit){
+                DistributedAssert(obj);
                 Boolean aBoolean = redisTemplate.opsForValue().setIfAbsent("Lock:"+obj.toString(), "1", exptime, timeUnit);
                 return BooleanUtil.isTrue(aBoolean);
         }
