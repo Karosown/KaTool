@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.Karos</groupId>
     <artifactId>KaTool</artifactId>
-    <version>1.5.0</version>
+    <version>1.5.2</version>
     <name>KaTool</name>
     <description>KaTool - 一款拥有七牛云文件处理、IP工具、IO工具、图形验证码生成、随机验证码生成的 Tool</description>
     <!-- https://mvnrepository.com/artifact/com.qiniu/qiniu-java-sdk -->

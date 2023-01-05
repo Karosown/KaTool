@@ -6,6 +6,24 @@
 KaTool (卡托) - 一款拥有七牛云文件处理、分布式锁、七牛云存储管理、IP工具、IO工具、图形验证码生成、随机验证码生成的Tool<br>
 
 **Tips：该Starter为个人项目使用，Starter制作仅满足于个人目前的开发需求，工具类和其他同类作品相比不全面望谅解，在图片写入OutputStream时，使用到了Hutool**
+## 安装Katool
+### git clone(仅第一次使用)
+```shell
+git clone https://github.com/Karosown/KaTool.git
+```
+### 打开项目
+选择Maven install
+
+![image-20230105233852328](http://7n.cdn.wzl1.top/typora/img/image-20230105233852328.png)
+
+### pom.xml
+在自己的项目中引入依赖
+```xml
+    <groupId>com.Karos</groupId>
+    <artifactId>KaTool</artifactId>
+<!--version以你clone的版本为例子-->
+    <version>1.5.2</version>
+```
 ## Application.yml配置说明
 ```yaml
 katool:
