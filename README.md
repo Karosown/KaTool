@@ -19,7 +19,7 @@ git clone https://github.com/Karosown/KaTool.git
 ```xml
     <groupId>com.Karos</groupId>
     <artifactId>KaTool</artifactId>
-<!--version以你clone的版本为例子-->
+    <!--version以你clone的版本为准-->
     <version>1.5.2</version>
 ```
 ## Application.yml配置说明
