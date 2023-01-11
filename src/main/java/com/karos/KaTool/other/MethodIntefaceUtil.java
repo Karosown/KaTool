@@ -1,5 +1,5 @@
 package com.karos.KaTool.other;
 
-public interface MethondIntefaceUtil {
+public interface MethodIntefaceUtil {
     Object method();
 }
