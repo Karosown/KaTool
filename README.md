@@ -20,7 +20,7 @@ git clone https://github.com/Karosown/KaTool.git
     <groupId>com.Karos</groupId>
     <artifactId>KaTool</artifactId>
     <!--version以你clone的版本为准-->
-    <version>1.5.2</version>
+    <version>1.5.4</version>
 ```
 ## Application.yml配置说明
 ```yaml
@@ -43,6 +43,8 @@ proxy_set_header   X-Real-Port      $remote_port;
 proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
 ```
 ## Update
+v1.5.4<br>
+分布式锁优化
 v1.5.3<br>
 新增函数式接口，简化lambda开发<br>
 v1.5.2<br>

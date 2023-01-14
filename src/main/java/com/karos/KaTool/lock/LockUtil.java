@@ -31,6 +31,7 @@ public class LockUtil {
         }
         //加锁
         public boolean DistributedLock(Object obj,Long exptime,TimeUnit timeUnit){
+                //线程被锁住了，就一直等待
                 DistributedAssert(obj);
                 Boolean aBoolean = redisTemplate.opsForValue().setIfAbsent("Lock:"+obj.toString(), "1", exptime, timeUnit);
                 return BooleanUtil.isTrue(aBoolean);
@@ -43,7 +44,12 @@ public class LockUtil {
                         if (ObjectUtils.isEmpty(o))return;
                 }
         }
-
+        
+        //延期
+        public boolean delayDistributedLock(Object obj,Long exptime,TimeUnit timeUnit){
+                Boolean aBoolean = redisTemplate.opsForValue().setIfPresent("Lock:"+obj.toString(), "1", exptime, timeUnit);
+                return BooleanUtil.isTrue(aBoolean);
+        }
         //释放锁
         public boolean DistributedUnLock(Object obj){
                 Boolean aBoolean = redisTemplate.delete("Lock:" + obj.toString());
