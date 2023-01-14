@@ -44,7 +44,7 @@ proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
 ```
 ## Update
 v1.5.4<br>
-分布式锁优化
+分布式锁优化，新增分布式锁延期<br>
 v1.5.3<br>
 新增函数式接口，简化lambda开发<br>
 v1.5.2<br>
