@@ -43,6 +43,9 @@ proxy_set_header   X-Real-Port      $remote_port;
 proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
 ```
 ## Update
+v1.5.5<br>
+GenerateCode类改名为GenerateCodeUtil<br>
+大部分类新增日志记录<br>
 v1.5.4<br>
 分布式锁优化，新增分布式锁延期<br>
 v1.5.3<br>

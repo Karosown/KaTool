@@ -11,6 +11,7 @@
 package com.karos.KaTool.lock;
 
 import cn.hutool.core.util.BooleanUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -19,10 +20,10 @@ import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
 
 @Component
 @Scope("prototype")
+@Slf4j
 public class LockUtil {
         @Resource
         RedisTemplate redisTemplate;
@@ -34,6 +35,7 @@ public class LockUtil {
                 //线程被锁住了，就一直等待
                 DistributedAssert(obj);
                 Boolean aBoolean = redisTemplate.opsForValue().setIfAbsent("Lock:"+obj.toString(), "1", exptime, timeUnit);
+                log.info("KaTool=> LockUntil => DistributedLock:{} value:{} extime:{} timeUnit:{}",obj.toString(), "1", exptime, timeUnit);
                 return BooleanUtil.isTrue(aBoolean);
         }
 
@@ -44,15 +46,17 @@ public class LockUtil {
                         if (ObjectUtils.isEmpty(o))return;
                 }
         }
-        
+
         //延期
         public boolean delayDistributedLock(Object obj,Long exptime,TimeUnit timeUnit){
                 Boolean aBoolean = redisTemplate.opsForValue().setIfPresent("Lock:"+obj.toString(), "1", exptime, timeUnit);
+                log.info("KaTool=> LockUntil => delayDistributedLock:{} value:{} extime:{} timeUnit:{}",obj.toString(), "1", exptime, timeUnit);
                 return BooleanUtil.isTrue(aBoolean);
         }
         //释放锁
         public boolean DistributedUnLock(Object obj){
                 Boolean aBoolean = redisTemplate.delete("Lock:" + obj.toString());
+                log.info("KaTool=> LockUntil => unDistributedLock:{} isdelete:{} ",obj.toString(),true);
                 return BooleanUtil.isTrue(aBoolean);
         }
 

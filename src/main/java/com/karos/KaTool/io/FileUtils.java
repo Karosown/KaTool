@@ -10,12 +10,14 @@
 
 package com.karos.KaTool.io;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
 
 @Component
+@Slf4j
 public class FileUtils {
     public static File createTempFile(){
         return createTempFile(true);
@@ -29,9 +31,14 @@ public class FileUtils {
                    tempFile.delete();
                    tempFile.createNewFile();
                 }
+                log.info("KaTool=> FileUtils=> Info: 临时文件创建成功");
                 return tempFile;
             } catch (IOException e) {
-                if (num++>50)throw new RuntimeException(e);
+                log.warn("KaTool=> FileUtils=> Warn: 临时文件创建重试");
+                if (num++>50){
+                    log.error("KaTool=> FileUtils=> Error: 临时文件创建失败");
+                    throw new RuntimeException(e);
+                }
             }
         }
     }

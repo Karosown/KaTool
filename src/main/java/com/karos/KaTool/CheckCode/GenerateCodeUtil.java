@@ -3,6 +3,7 @@ package com.karos.KaTool.CheckCode;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.DigestUtils;
 
 import javax.imageio.ImageIO;
@@ -20,7 +21,8 @@ import java.util.Random;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class GenerateCode {
+@Slf4j
+public class GenerateCodeUtil {
     private String salt;
     //使用到Algerian字体，系统里没有的话需要安装字体，字体只显示大写，去掉了1,0,i,o几个容易混淆的字符
     public static final String VERIFY_CODES = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ";
@@ -85,6 +87,7 @@ public class GenerateCode {
     public static String outputVerifyImage(int w, int h, OutputStream os, int verifySize) throws IOException {
         String verifyCode = generateVerifyCode(verifySize);
         outputImage(w, h, os, verifyCode);
+        log.info("KaTool=> GenerateCodeUtil=>outputVerifyImage=> Info: VerifyImageCode:{}",verifyCode);
         return verifyCode;
     }
 
@@ -277,7 +280,9 @@ public class GenerateCode {
      */
     public String touchTextCode(String key,int length){
         String s=StrHex(new StringBuffer(key),new StringBuffer(salt+"Katool"));
-        return getMD5Hex(s.substring(2,7)).substring(5,5+length).toUpperCase(Locale.ROOT);
+        String code = getMD5Hex(s.substring(2, 7)).substring(5, 5 + length).toUpperCase(Locale.ROOT);
+        log.info("KaTool=> GenerateCodeUtil=>touchTextCode=> Info: KEY:{} TextCode:{}",key,code);
+        return code;
     }
 
     //字符串加密算法
