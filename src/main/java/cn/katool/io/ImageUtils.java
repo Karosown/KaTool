@@ -8,14 +8,13 @@
  * @Blog: https://www.wzl1.top/
  */
 
-package com.karos.KaTool.io;
+package cn.katool.io;
 
 
 import cn.hutool.core.img.ImgUtil;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Base64Utils;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.io.*;
 import java.net.MalformedURLException;

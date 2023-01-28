@@ -8,9 +8,10 @@
  * @Blog: https://www.wzl1.top/
  */
 
-package com.karos.KaTool.qiniu.impl;
-import com.karos.KaTool.io.FileUtils;
-import com.karos.KaTool.qiniu.IQiniuService;
+package cn.katool.qiniu.impl;
+import cn.katool.Exception.KaToolException;
+import cn.katool.io.FileUtils;
+import cn.katool.qiniu.IQiniuService;
 import com.qiniu.common.QiniuException;
 import com.qiniu.http.Response;
 import com.qiniu.storage.BucketManager;
@@ -64,7 +65,7 @@ public class QiniuServiceImpl implements IQiniuService, InitializingBean {
     }
 
     @Override
-    public boolean isExist(String dir,String fileName) {
+    public boolean isExist(String dir,String fileName) throws KaToolException {
         File tempFile = FileUtils.createTempFile();
         try {
             uploadFile(tempFile,dir,fileName,false);
@@ -83,7 +84,7 @@ public class QiniuServiceImpl implements IQiniuService, InitializingBean {
     }
 
     @Override
-    public boolean isExist(String dir,String fileName_fast, String fileName_second) {
+    public boolean isExist(String dir,String fileName_fast, String fileName_second) throws KaToolException {
         return isExist(dir,fileName_fast+fileName_second);
     }
 

@@ -1,5 +1,6 @@
-package com.karos.KaTool.qiniu;
+package cn.katool.qiniu;
 
+import cn.katool.Exception.KaToolException;
 import com.qiniu.common.QiniuException;
 
 import java.io.File;
@@ -13,7 +14,7 @@ public interface IQiniuService {
      * @param fileName  文件名
      * @return
      */
-    boolean isExist(String dir,String fileName);
+    boolean isExist(String dir,String fileName) throws KaToolException;
 
     /**
      * 判断文件是否存在
@@ -22,7 +23,7 @@ public interface IQiniuService {
      * @param fileName_second   文件后缀名。如:.txt
      * @return
      */
-    boolean isExist(String dir,String fileName_fast, String fileName_second);
+    boolean isExist(String dir,String fileName_fast, String fileName_second) throws KaToolException;
 
     /**
      * 以文件的形式上传

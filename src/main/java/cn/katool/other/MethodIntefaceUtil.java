@@ -1,4 +1,4 @@
-package com.karos.KaTool.other;
+package cn.katool.other;
 
 public interface MethodIntefaceUtil {
     Object method();

@@ -1,4 +1,4 @@
-package com.karos.KaTool.CheckCode;
+package cn.katool.CheckCode;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -87,7 +87,7 @@ public class GenerateCodeUtil {
     public static String outputVerifyImage(int w, int h, OutputStream os, int verifySize) throws IOException {
         String verifyCode = generateVerifyCode(verifySize);
         outputImage(w, h, os, verifyCode);
-        log.info("KaTool=> GenerateCodeUtil=>outputVerifyImage=> Info: VerifyImageCode:{}",verifyCode);
+        log.info("katool=> GenerateCodeUtil=>outputVerifyImage=> Info: VerifyImageCode:{}",verifyCode);
         return verifyCode;
     }
 
@@ -281,7 +281,7 @@ public class GenerateCodeUtil {
     public String touchTextCode(String key,int length){
         String s=StrHex(new StringBuffer(key),new StringBuffer(salt+"Katool"));
         String code = getMD5Hex(s.substring(2, 7)).substring(5, 5 + length).toUpperCase(Locale.ROOT);
-        log.info("KaTool=> GenerateCodeUtil=>touchTextCode=> Info: KEY:{} TextCode:{}",key,code);
+        log.info("katool=> GenerateCodeUtil=>touchTextCode=> Info: KEY:{} TextCode:{}",key,code);
         return code;
     }
 
@@ -289,7 +289,7 @@ public class GenerateCodeUtil {
     private String StrHex(StringBuffer str, StringBuffer key){
         str.append(key+getTIMEstr());
         str.append(getMD5Hex(key.toString()));
-        return getMD5Hex(str.insert(str.length()>>1,"KaTool").toString());
+        return getMD5Hex(str.insert(str.length()>>1,"katool").toString());
     }
     //MD5加密
     private String getMD5Hex(String str){

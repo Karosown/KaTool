@@ -43,6 +43,11 @@ proxy_set_header   X-Real-Port      $remote_port;
 proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
 ```
 ## Update
+v1.6.0  更新日期 2023 / 1 / 29 / 02:40<br>
+包从com.Karos.KaTool改为cn.katool<br>
+新增KaTool异常处理类<br>
+基于hutool.DateUtil扩展开发expDateUtil，支持Corn和Date间的互相转换<br>
+预计近日将上传Maven中央仓库<br>
 v1.5.5<br>
 GenerateCode类改名为GenerateCodeUtil<br>
 大部分类新增日志记录<br>

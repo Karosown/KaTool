@@ -8,8 +8,10 @@
  * @Blog: https://www.wzl1.top/
  */
 
-package com.karos.KaTool.io;
+package cn.katool.io;
 
+import cn.katool.Exception.ErrorCode;
+import cn.katool.Exception.KaToolException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -19,10 +21,10 @@ import java.io.IOException;
 @Component
 @Slf4j
 public class FileUtils {
-    public static File createTempFile(){
+    public static File createTempFile() throws KaToolException {
         return createTempFile(true);
     }
-    public static File createTempFile(boolean isReCreate){
+    public static File createTempFile(boolean isReCreate) throws KaToolException {
         int num=0;
         while (true) {
             try {
@@ -31,13 +33,13 @@ public class FileUtils {
                    tempFile.delete();
                    tempFile.createNewFile();
                 }
-                log.info("KaTool=> FileUtils=> Info: 临时文件创建成功");
+                log.info("katool=> FileUtils=> Info: 临时文件创建成功");
                 return tempFile;
             } catch (IOException e) {
-                log.warn("KaTool=> FileUtils=> Warn: 临时文件创建重试");
+                log.warn("katool=> FileUtils=> Warn: 临时文件创建重试");
                 if (num++>50){
-                    log.error("KaTool=> FileUtils=> Error: 临时文件创建失败");
-                    throw new RuntimeException(e);
+                    log.error("katool=> FileUtils=> Error: 临时文件创建失败");
+                    throw new KaToolException(ErrorCode.FILE_ERROR);
                 }
             }
         }
