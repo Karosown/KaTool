@@ -17,10 +17,10 @@ git clone https://github.com/Karosown/KaTool.git
 ### pom.xml
 在自己的项目中引入依赖
 ```xml
-    <groupId>com.Karos</groupId>
+    <groupId>cn.katool</groupId>
     <artifactId>KaTool</artifactId>
     <!--version以你clone的版本为准-->
-    <version>1.5.4</version>
+    <version>1.6.0</version>
 ```
 ## Application.yml配置说明
 ```yaml

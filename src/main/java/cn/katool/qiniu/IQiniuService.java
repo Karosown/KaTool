@@ -12,7 +12,6 @@ public interface IQiniuService {
      * 判断文件是否存在
      * @param dir   上传目录
      * @param fileName  文件名
-     * @return
      */
     boolean isExist(String dir,String fileName) throws KaToolException;
 
@@ -21,7 +20,6 @@ public interface IQiniuService {
      * @param dir   上传目录
      * @param fileName_fast     文件前缀
      * @param fileName_second   文件后缀名。如:.txt
-     * @return
      */
     boolean isExist(String dir,String fileName_fast, String fileName_second) throws KaToolException;
 
@@ -84,7 +82,6 @@ public interface IQiniuService {
     String delete(String dir,String fileName) throws QiniuException;
     /**
      * 删除文件
-     *
      * @param dir   上传目录
      * @param fileName_fast 文件名
      * @param fileName_second 文件后缀名。如:.txt
