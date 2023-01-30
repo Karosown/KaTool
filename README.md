@@ -3,7 +3,7 @@
 &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;![SpringBoot-2.7.0](https://img.shields.io/badge/SpringBoot-2.7.0-green)&emsp;&emsp;&emsp;![Hutool-5.8.10](https://img.shields.io/badge/Hutool-5.8.10-green)
 
 # KaTool (卡托)
-KaTool - 一款拥有七牛云文件处理、IP工具、IO工具、图形验证码生成、随机验证码生成、Date工具、函数式接口的Java开发工具类，依赖于SpringBoot框架<br>
+KaTool - 一款拥有七牛云文件处理、IP工具、IO工具、图形验证码生成、随机验证码生成、Date工具、函数式接口、分布式锁实现的Java开发工具类，依赖于SpringBoot框架<br>
 
 **Tips：该Starter为个人项目使用，Starter制作仅满足于个人目前的开发需求，工具类和其他同类作品相比不全面望谅解，在图片写入OutputStream时，使用到了Hutool**
 ## 安装Katool
@@ -17,10 +17,12 @@ git clone https://github.com/Karosown/KaTool.git
 ### pom.xml
 在自己的项目中引入依赖
 ```xml
+<!-- https://mvnrepository.com/artifact/cn.katool/KaTool -->
+<dependency>
     <groupId>cn.katool</groupId>
     <artifactId>KaTool</artifactId>
-    <!--version以你clone的版本为准-->
-    <version>1.6.0</version>
+    <version>{{KaTool.version}}</version>
+</dependency>
 ```
 ## Application.yml配置说明
 ```yaml

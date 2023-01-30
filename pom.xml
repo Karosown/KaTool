@@ -15,8 +15,13 @@
     <description>KaTool - 一款拥有七牛云文件处理、IP工具、IO工具、图形验证码生成、随机验证码生成、Date工具、函数式接口的Java开发工具类，依赖于SpringBoot框架</description>
     <!-- https://mvnrepository.com/artifact/com.qiniu/qiniu-java-sdk -->
     <properties>
-        <java.version>17</java.version>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <java.version>1.8</java.version>
     </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -36,12 +41,6 @@
             <artifactId>qiniu-java-sdk</artifactId>
             <version>7.2.28</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.8.5</version>
-        </dependency>
         <dependency>
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
@@ -51,7 +50,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
@@ -87,11 +85,12 @@
     <!--开源协议...-->
     <licenses>
         <license>
-            <name>The Apache Software License, Version 2.0</name>
+            <name>Apache License, Version 2.0</name>
             <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+            <comments>A business-friendly OSS license</comments>
         </license>
     </licenses>
-
     <!--开发者信息-->
     <developers>
         <developer>
@@ -99,8 +98,7 @@
             <name>Karos</name>
             <email>mail@wzl1.top</email>
             <roles>
-                <role>Project Manager</role>
-                <role>Architect</role>
+                <role>Developer</role>
             </roles>
             <timezone>+8</timezone>
         </developer>
@@ -110,89 +108,71 @@
     <scm>
         <connection>https://github.com/Karosown/KaTool.git</connection>
         <developerConnection>scm:git:ssh://git@github.com:Karosown/KaTool.git</developerConnection>
-        <url>https://github.com/Karosown/KaTool</url>
+        <url>https://github.com/Karosown/KaTool/tree/master</url>
     </scm>
 
-    <profiles>
-        <profile>
-            <!--注意,此id必须与setting.xml中指定的一致,不要自作聪明改它名字-->
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.2.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.9.1</version>
+                <configuration>
+                    <additionalJOptions>
+                        <additionalJOption>-Xdoclint:none</additionalJOption>
+                    </additionalJOptions>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.5</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <distributionManagement>
+        <snapshotRepository>
             <id>ossrh</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.sonatype.plugins</groupId>
-                        <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>1.6.13</version>
-                        <extensions>true</extensions>
-                        <configuration>
-                            <serverId>ossrh</serverId>
-                            <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
-                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-source-plugin</artifactId>
-                        <version>2.2.1</version>
-                        <executions>
-                            <execution>
-                                <id>attach-sources</id>
-                                <goals>
-                                    <goal>jar-no-fork</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>2.9.1</version>
-<!--                        <configuration>-->
-<!--                            <javadocExecutable>${java.home}/../bin/javadoc</javadocExecutable>-->
-<!--                        </configuration>-->
-                        <executions>
-                            <execution>
-                                <id>attach-javadocs</id>
-                                <goals>
-                                    <goal>jar</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.5</version>
-                        <executions>
-                            <execution>
-                                <id>sign-artifacts</id>
-                                <phase>verify</phase>
-                                <goals>
-                                    <goal>sign</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
+            <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
 
-            <distributionManagement>
-                <snapshotRepository>
-                    <!--注意,此id必须与setting.xml中指定的一致-->
-                    <id>ossrh</id>
-                    <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
-                </snapshotRepository>
-                <repository>
-                    <id>ossrh</id>
-                    <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-                </repository>
-            </distributionManagement>
-        </profile>
-
-    </profiles>
 
 
 
