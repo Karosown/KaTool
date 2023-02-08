@@ -8,7 +8,7 @@
  * @Blog: https://www.wzl1.top/
  */
 
-package cn.katool.dateutil;
+package cn.katool.util;
 
 import cn.hutool.core.date.DateUtil;
 import cn.katool.Exception.ErrorCode;

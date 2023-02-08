@@ -3,7 +3,7 @@
 &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;![SpringBoot-2.7.0](https://img.shields.io/badge/SpringBoot-2.7.0-green)&emsp;&emsp;&emsp;![Hutool-5.8.10](https://img.shields.io/badge/Hutool-5.8.10-green)
 
 # KaTool (卡托)
-KaTool - 一款拥有七牛云文件处理、IP工具、IO工具、图形验证码生成、随机验证码生成、Date工具、函数式接口、分布式锁实现的Java开发工具类，依赖于SpringBoot框架<br>
+KaTool - 一款拥有七牛云文件处理、IP工具、IO工具、图形验证码生成、随机验证码生成、Date工具、Base64工具、函数式接口、分布式锁实现的Java开发工具类，依赖于SpringBoot框架<br>
 
 **Tips：该Starter为个人项目使用，Starter制作仅满足于个人目前的开发需求，工具类和其他同类作品相比不全面望谅解，在图片写入OutputStream时，使用到了Hutool**
 ## 安装Katool
@@ -45,7 +45,10 @@ proxy_set_header   X-Real-Port      $remote_port;
 proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
 ```
 ## Update
-v1.6.0  更新日期 2023 / 1 / 29 / 02:40<br>
+v1.6.1  更新日期 2023 / 02 / 09 / 01:13<br>
+将expDateUtil移动只cn.katool.util下<br>
+新增expBase64Util，扩展于org.springframework.util.Base64Utils<br>
+v1.6.0  更新日期 2023 / 01 / 29 / 02:40<br>
 包从com.Karos.KaTool改为cn.katool<br>
 新增KaTool异常处理类<br>
 基于hutool.DateUtil扩展开发expDateUtil，支持Corn和Date间的互相转换<br>

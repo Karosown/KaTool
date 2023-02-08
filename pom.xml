@@ -10,9 +10,9 @@
     </parent>
     <groupId>cn.katool</groupId>
     <artifactId>KaTool</artifactId>
-    <version>1.6.0</version>
+    <version>1.6.1</version>
     <name>KaTool</name>
-    <description>KaTool - 一款拥有七牛云文件处理、IP工具、IO工具、图形验证码生成、随机验证码生成、Date工具、函数式接口的Java开发工具类，依赖于SpringBoot框架</description>
+    <description>KaTool - 一款拥有七牛云文件处理、IP工具、IO工具、图形验证码生成、随机验证码生成、Date工具、Base64工具、函数式接口的Java开发工具类，依赖于SpringBoot框架</description>
     <!-- https://mvnrepository.com/artifact/com.qiniu/qiniu-java-sdk -->
     <properties>
         <maven.compiler.source>8</maven.compiler.source>

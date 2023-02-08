@@ -10,7 +10,6 @@
 
 package cn.katool.Config;
 
-import com.google.gson.Gson;
 import com.qiniu.common.Zone;
 import com.qiniu.storage.BucketManager;
 import com.qiniu.storage.UploadManager;
@@ -97,8 +96,4 @@ public class QiNiuConfig {
         return new BucketManager(auth(), qiNiuConfig());
     }
 
-    @Bean
-    public Gson gson() {
-        return new Gson();
-    }
 }
