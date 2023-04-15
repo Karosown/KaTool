@@ -36,6 +36,9 @@ katool:
     zone: # 存储区域
     domain: # 访问域名
     basedir: # 文件存储根目录
+  lock:
+    internalLockLeaseTime: 30L # 上锁最少时间，默认为30L
+    timeUnit: TimeUnit.SECONDS
 ```
 ## Nginx配置
 Nginx反向代理后获取真实来源IP
@@ -45,6 +48,9 @@ proxy_set_header   X-Real-Port      $remote_port;
 proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
 ```
 ## Update
+v1.7.1  更新日期 2023 / 04 / 15 / 17:37<br>
+新增分布式锁看门狗机制，零代码侵入，解决为使用分布式锁而选择Redssion的问题
+新增RedisUtils，对RedisTemplate进行封装，并且实现了分布式锁功能
 v1.6.1  更新日期 2023 / 02 / 09 / 01:13<br>
 将expDateUtil移动只cn.katool.util下<br>
 新增expBase64Util，扩展于org.springframework.util.Base64Utils<br>

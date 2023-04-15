@@ -22,6 +22,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 @Configuration("QiNiuConfig")
@@ -32,6 +33,7 @@ import org.springframework.stereotype.Component;
 @NoArgsConstructor
 @Data
 @ComponentScan("cn.katool.*")
+@Scope("Single")
 public class QiNiuConfig {
     /**
      * ak
