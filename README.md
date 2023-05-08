@@ -7,11 +7,11 @@ KaTool - 一款拥有七牛云文件处理、IP工具、IO工具、图形验证�
 
 **Tips：该Starter为个人项目使用，Starter制作仅满足于个人目前的开发需求，也只是个人开发，目前还在孵化阶段，工具类和其他同类作品相比不全面望谅解，在图片写入OutputStream时，使用到了Hutool**
 ## 安装Katool
-### git clone(仅第一次使用)
+### git clone(Maven仓库无法下载时，选择此方法)
 ```shell
 git clone https://github.com/Karosown/KaTool.git
 ```
-### 打开项目
+### 打开项目(Maven仓库无法下载时，选择此方法)
 选择Maven install
 ![image-20230105233852328](http://7n.cdn.wzl1.top/typora/img/image-20230105233852328.png)
 ### pom.xml
