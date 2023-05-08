@@ -28,9 +28,10 @@ import java.util.concurrent.TimeUnit;
 @NoArgsConstructor
 @ComponentScan("cn.katool.*")
 @Scope("Single")            //  开启单例模式
+@ConfigurationProperties("katool.lock")
 public class LockConfig {
 
-    @Value("katool.lock")
+//    @Value("katool.lock")
     private Long internalLockLeaseTime = 30L;
 
 

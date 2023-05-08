@@ -37,8 +37,8 @@ katool:
     domain: # 访问域名
     basedir: # 文件存储根目录
   lock:
-    internalLockLeaseTime: 30L # 上锁最少时间，默认为30L
-    timeUnit: TimeUnit.SECONDS
+    internalLockLeaseTime: 30 # 上锁最少时间，默认为30L
+    timeUnit: seconds #单位 秒
 ```
 ## Nginx配置
 Nginx反向代理后获取真实来源IP
