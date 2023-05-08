@@ -5,7 +5,7 @@
 # KaTool (卡托)
 KaTool - 一款拥有七牛云文件处理、IP工具、IO工具、图形验证码生成、随机验证码生成、Date工具、Base64工具、函数式接口、分布式锁实现的Java开发工具类，依赖于SpringBoot框架<br>
 
-**Tips：该Starter为个人项目使用，Starter制作仅满足于个人目前的开发需求，工具类和其他同类作品相比不全面望谅解，在图片写入OutputStream时，使用到了Hutool**
+**Tips：该Starter为个人项目使用，Starter制作仅满足于个人目前的开发需求，也只是个人开发，目前还在孵化阶段，工具类和其他同类作品相比不全面望谅解，在图片写入OutputStream时，使用到了Hutool**
 ## 安装Katool
 ### git clone(仅第一次使用)
 ```shell
