@@ -49,7 +49,7 @@ proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
 ```
 ## Update
 v1.7.1  更新日期 2023 / 04 / 15 / 17:37<br>
-5-8:对LockConfig进行优化
+5-8:对LockConfig进行优化<br>
 新增分布式锁看门狗机制，零代码侵入，解决为使用分布式锁而选择Redssion的问题
 新增RedisUtils，对RedisTemplate进行封装，并且实现了分布式锁功能
 v1.6.1  更新日期 2023 / 02 / 09 / 01:13<br>
