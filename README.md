@@ -7,11 +7,11 @@ KaTool - 一款拥有七牛云文件处理、IP工具、IO工具、图形验证�
 
 **Tips：该Starter为个人项目使用，Starter制作仅满足于个人目前的开发需求，也只是个人开发，目前还在孵化阶段，工具类和其他同类作品相比不全面望谅解，在图片写入OutputStream时，使用到了Hutool**
 ## 安装Katool
-### git clone(Maven仓库无法下载时，选择此方法)
+### git clone(仅第一次使用)
 ```shell
 git clone https://github.com/Karosown/KaTool.git
 ```
-### 打开项目(Maven仓库无法下载时，选择此方法)
+### 打开项目
 选择Maven install
 ![image-20230105233852328](http://7n.cdn.wzl1.top/typora/img/image-20230105233852328.png)
 ### pom.xml
@@ -48,10 +48,22 @@ proxy_set_header   X-Real-Port      $remote_port;
 proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
 ```
 ## Update
+v1.8.1 2023 / 08 / 19 / 17：24<br>
+优化分布式锁：采用 自旋锁+同步锁，但是并没有解决公平竞争锁的问题，如果要解决可以使用消息队列<br>
+v1.8.0  2023 / 08 / 19 / 17：16<br>
+修复RedisUtil出现多个LockUtil Bean的问题<br>
+v1.8.0  2023 / 08 / 06 / 04：22<br>
+修改LockUtil，利用Redistemplate实现可重入分布式锁<br>
+RedisUtils新增ZSet和Set类型的支持<br>
+v1.7.12 修复时间 2023 / 05 / 29 / 19:02<br>
+解决强制配置七牛云服务的问题<br>
+v1.7.11 修复时间 2023 / 05 / 29 / 10:39<br>
+解决部分类自动装配失败问题<br>
+原因；@Scope("Single") -> @Scope("singleton") 可能是最后全局替换的时候替换掉了<br>
 v1.7.1  更新日期 2023 / 04 / 15 / 17:37<br>
 5-8:对LockConfig进行优化<br>
-新增分布式锁看门狗机制，零代码侵入，解决为使用分布式锁而选择Redssion的问题
-新增RedisUtils，对RedisTemplate进行封装，并且实现了分布式锁功能
+新增分布式锁看门狗机制，零代码侵入，解决为使用分布式锁而选择Redssion的问题<br>
+新增RedisUtils，对RedisTemplate进行封装，并且实现了分布式锁功能<br>
 v1.6.1  更新日期 2023 / 02 / 09 / 01:13<br>
 将expDateUtil移动只cn.katool.util下<br>
 新增expBase64Util，扩展于org.springframework.util.Base64Utils<br>

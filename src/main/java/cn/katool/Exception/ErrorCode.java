@@ -4,8 +4,8 @@ import lombok.Data;
 
 public enum ErrorCode {
     PARAMS_ERROR(40000, "参数错误"),
-    FILE_ERROR(50000, "文件错误");
-
+    FILE_ERROR(50000, "文件错误"),
+    OPER_ERROR(60000,"操作错误");
     private int code;
 
     private String message;

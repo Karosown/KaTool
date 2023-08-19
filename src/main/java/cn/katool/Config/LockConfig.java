@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
 @AllArgsConstructor
 @NoArgsConstructor
 @ComponentScan("cn.katool.*")
-@Scope("Single")            //  开启单例模式
+@Scope("singleton")            //  开启单例模式
 @ConfigurationProperties("katool.lock")
 public class LockConfig {
 

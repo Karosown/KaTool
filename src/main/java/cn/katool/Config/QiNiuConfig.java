@@ -10,20 +10,24 @@
 
 package cn.katool.Config;
 
+import cn.hutool.core.util.StrUtil;
 import com.qiniu.common.Zone;
 import com.qiniu.storage.BucketManager;
 import com.qiniu.storage.UploadManager;
 import com.qiniu.util.Auth;
+import io.netty.util.internal.StringUtil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.apache.tomcat.util.buf.StringUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
 
 @Configuration("QiNiuConfig")
 @Component
@@ -33,24 +37,24 @@ import org.springframework.stereotype.Component;
 @NoArgsConstructor
 @Data
 @ComponentScan("cn.katool.*")
-@Scope("Single")
+@Scope("singleton")
 public class QiNiuConfig {
     /**
      * ak
      */
-    private String accessKey;
+    private String accessKey="******";
     /**
      * sk
      */
-    private String secretKey;
+    private String secretKey="******";
     /**
      * 所属空间
      */
-    private String zone;
+    private String zone="huabei";
     /**
      * 基础上传目录
      */
-    private String basedir;
+    private String basedir="/katool";
     /**
      * 配置空间的存储区域
      * <p>
