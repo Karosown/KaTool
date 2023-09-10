@@ -12,7 +12,7 @@ package cn.katool.util;
 
 import org.springframework.util.Base64Utils;
 
-public class expBase64Util extends Base64Utils {
+public class ExpBase64Util extends Base64Utils {
     //Base64 code regular judgment expression
     private static final String BASE64_PATTERN = "^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$";
 

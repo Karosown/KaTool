@@ -25,20 +25,28 @@ git clone https://github.com/Karosown/KaTool.git
 </dependency>
 ```
 ## Application.yml配置说明
+
+使用分布式锁前请开启Redistemplate的事务支持
+
 ```yaml
 katool:
   # 七牛云配置 所有值都必须存在,没有的话留空,不能缺
-  qiniu:
-    accessKey: #你的七牛云accessKey
-    secretKey: #你的七牛云secretKey
-    # 对象储存
-    bucket: # 空间名称
-    zone: # 存储区域
-    domain: # 访问域名
-    basedir: # 文件存储根目录
-  lock:
-    internalLockLeaseTime: 30 # 上锁最少时间，默认为30L
-    timeUnit: seconds #单位 秒
+      qiniu:
+        accessKey: #你的七牛云accessKey
+        secretKey: #你的七牛云secretKey
+        # 对象储存
+        bucket: # 空间名称
+        zone: # 存储区域
+        domain: # 访问域名
+        basedir: # 文件存储根目录
+    lock:
+        internalLockLeaseTime: 30   # 分布式锁默认租约时间，建议别设太小，不然和没有设置毫无区别
+        timeUnit: seconds           # 租约时间单位
+    util:
+        redis:
+            policy: "caffeine"      # 选择内存缓存策略，caffeine
+            exptime: {5*60*1000}              # LFU过期时间
+            time-unit: milliseconds #  过期时间单位
 ```
 ## Nginx配置
 Nginx反向代理后获取真实来源IP
@@ -47,7 +55,59 @@ proxy_set_header   X-Real-IP        $remote_addr;
 proxy_set_header   X-Real-Port      $remote_port;
 proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
 ```
+## RedisUtilConfig
+
+如何自定义Redis多层缓存策略
+
+```java
+package cn.katool.katooltest.config;
+
+
+import cn.katool.util.cache.policy.CachePolicy;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+
+
+
+@Configuration
+public class RedisUtilConfig {
+
+    
+
+    @Bean
+    @Primary
+    public CachePolicy cachePolicy() {
+
+        return null;
+    }
+
+
+}
+```
+
+如果使用默认策略（不采取缓存）直接`return new DefaultCachePolicy();`即可，KaTool自动装配了Caffeine的Cache，所以可以直接对CaffeineUtil进行使用
+
 ## Update
+
+v1.9.0 2023 / 09 /08
+
+- 新增策略模式，选取内存策略做到内存缓存策略，有效降低缓存穿透、击穿。
+
+- 优化分布式锁，使用消息队列监听+FIFOUNI队列保证分布式锁的公平性与可靠性，看门狗改为使用`ScheduledThreadPoolExecutor`实现，单机模式下（排除网络IO）与synchronized性能差别不大
+
+  20个线程
+
+  ![image-20230910194932722](http://gd.7n.cdn.wzl1.top/typora/img/image-20230910194932722.png)
+
+  ![image-20230910194945932](http://gd.7n.cdn.wzl1.top/typora/img/image-20230910194945932.png)
+
+  150个线程
+
+  ![image-20230910195006933](http://gd.7n.cdn.wzl1.top/typora/img/image-20230910195006933.png)
+
+  ![image-20230910195030253](http://gd.7n.cdn.wzl1.top/typora/img/image-20230910195030253.png)
+
 v1.8.1 2023 / 08 / 19 / 17：24<br>
 优化分布式锁：采用 自旋锁+同步锁，但是并没有解决公平竞争锁的问题，如果要解决可以使用消息队列<br>
 v1.8.0  2023 / 08 / 19 / 17：16<br>
@@ -59,7 +119,7 @@ v1.7.12 修复时间 2023 / 05 / 29 / 19:02<br>
 解决强制配置七牛云服务的问题<br>
 v1.7.11 修复时间 2023 / 05 / 29 / 10:39<br>
 解决部分类自动装配失败问题<br>
-原因；@Scope("Single") -> @Scope("singleton") 可能是最后全局替换的时候替换掉了<br>
+原因：@Scope("Single") -> @Scope("singleton") 可能是最后全局替换的时候替换掉了<br>
 v1.7.1  更新日期 2023 / 04 / 15 / 17:37<br>
 5-8:对LockConfig进行优化<br>
 新增分布式锁看门狗机制，零代码侵入，解决为使用分布式锁而选择Redssion的问题<br>
@@ -102,6 +162,7 @@ v1.4.0<br>
 v1.3.5<br>
 Ip工具：避免Nginx反向代理，获得真实IP<br>
 Nginx-Config的server中加上<br>
+
 ```Nginx.config-server
 proxy_set_header   X-Real-IP        $remote_addr;
 proxy_set_header   X-Real-Port      $remote_port;

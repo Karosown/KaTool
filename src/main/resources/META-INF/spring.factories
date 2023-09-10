@@ -1,2 +1,4 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-cn.katool.Config.QiNiuConfig
+cn.katool.Config.QiNiuConfig,\
+cn.katool.Config.LockConfig,\
+cn.katool.Config.RedisUtilConfig 

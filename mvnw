@@ -298,8 +298,8 @@ fi
 
 # Provide a "standardized" way to retrieve the CLI args that will
 # work with both Windows and non-Windows executions.
-MAVEN_CMD_LINE_ARGS="$MAVEN_CONFIG $@"
-export MAVEN_CMD_LINE_ARGS
+MAVEN_CMD_LINE_ARGV="$MAVEN_CONFIG $@"
+export MAVEN_CMD_LINE_ARGV
 
 WRAPPER_LAUNCHER=org.apache.maven.wrapper.MavenWrapperMain
 

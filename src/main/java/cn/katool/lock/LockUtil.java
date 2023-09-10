@@ -10,32 +10,33 @@
 
 package cn.katool.lock;
 
-import ch.qos.logback.core.util.TimeUtil;
 import cn.hutool.core.util.BooleanUtil;
-import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.RandomUtil;
-import cn.hutool.cron.CronUtil;
-import cn.hutool.cron.task.Task;
 import cn.katool.Config.LockConfig;
 import cn.katool.Exception.ErrorCode;
 import cn.katool.Exception.KaToolException;
-import cn.katool.other.MethodIntefaceUtil;
-import com.qiniu.util.StringUtils;
+import cn.katool.util.ScheduledTaskUtil;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.TimeoutUtils;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
+import java.util.concurrent.locks.LockSupport;
+
+import static cn.katool.lock.LockMessageWatchDog.LOCK_MQ_NAME;
+import static cn.katool.lock.LockMessageWatchDog.threadWaitQueue;
 
 @Component
 @Scope("prototype")
@@ -43,15 +44,44 @@ import java.util.concurrent.TimeUnit;
 public class LockUtil {
         @Resource
         RedisTemplate redisTemplate;
-
-        @Resource(name = "getLockScript")
+        // lockName:uID:numbers
+        // key[1] 锁名
+        // ARGV[1] UID
+        // ARGV[2] 时间
+        @Value("if redis.call('exists',KEYS[1]) ~= 0 then\n" +        // 这个锁是否存在
+                "        if redis.call('hexists',KEYS[1],ARGV[1] ) == 0 then\n" +       // 存在但不是自己的锁
+                "            return redis.call('pttl',KEYS[1]);\n" +                  // 返回剩余时间
+                "        end\n" +
+//                "        -- 如果是自己的锁就记录次数\n" +
+                "        redis.call('hincrby',KEYS[1],ARGV[1],1);\n" +                // 是自己的锁重入
+                "else\n" +
+                "        redis.call('hset',KEYS[1],ARGV[1],1);\n" +  // 没有的话就加上
+                "end\n" +
+                "redis.call('pexpire',KEYS[1],ARGV[2]);\n" +      //延期
+                "return nil")             //返回
         private String lockScript;
-        @Resource(name = "getUnLockScript")
+        @Value("    if redis.call('exists',KEYS[1]) ~= 0 then\n" +                            //如果锁存在
+                "        if redis.call('hexists',KEYS[1],ARGV[1]) ~= 0 then\n" +                      // 如果是自己的锁
+                "                local inc= redis.call('hincrby',KEYS[1],ARGV[1],-1);\n" +
+                "               if inc == 0 then" +
+                "                    redis.call('hdel',KEYS[1],ARGV[1]);\n" +
+                "               end" +
+                "         return inc;\n" +
+                "        end\n" +
+                "    end\n" +
+                " return nil\n")
         private String unLockScript;
+
+        @Value("    if redis.call('exists',KEYS[1]) ~= 0 then\n" +
+                "       local lessTime = redis.call('pttl',KEYS[1]);\n" +
+                "       redis.call('pexpire',KEYS[1],ARGV[1]);\n" +                            //如果锁存在
+                "    end\n" +
+                "    return redis.call('pttl',KEYS[1]);" )
+        private String delayLockScript;
 
         public String serviceUUid=RandomUtil.randomString(16);
 
-        private static boolean isOpenCorn=false;
+        private volatile static boolean isOpenCorn=false;
 
         /**
          * 带看门狗机制上锁
@@ -60,34 +90,40 @@ public class LockUtil {
          */
         public boolean DistributedLock(Object lockObj){
                 try {
-                        return DistributedLock(lockObj,null,null);
+                        return DistributedLock(lockObj,null,null,true);
                 } catch (KaToolException e) {
                         throw new RuntimeException(e);
                 }
         }
         @Resource
         LockConfig lockConfig;
+
         //加锁
-        public Long luaToRedisByLock(String lockName,Long expTime,TimeUnit timeUnit){
+        public Long luaToRedisByLock(String lockName,Long expTime,TimeUnit timeUnit,String[] hashkey){
                 long id = Thread.currentThread().getId();
-                //生成value1
-                String hashKey= DigestUtils.md5DigestAsHex(new String(id+serviceUUid).getBytes());
+                //生成hashkey
+                String hashKey=hashkey[0]= DigestUtils.md5DigestAsHex(new String(id+serviceUUid).getBytes());
+                log.info("serviceUUid:{},id:{},hashKey:{}",serviceUUid,id,hashKey);
                 DefaultRedisScript defaultRedisScript = new DefaultRedisScript();
                 ArrayList<String> keys = new ArrayList<>();
-                ArrayList<String> args = new ArrayList();
+                ArrayList<Object> args = new ArrayList();
                 keys.add(lockName);
-                keys.add(String.valueOf(TimeoutUtils.toMillis(expTime,timeUnit)));
                 args.add(hashKey);
+                args.add(TimeoutUtils.toMillis(expTime,timeUnit));
                 defaultRedisScript.setScriptText(lockScript);
                 defaultRedisScript.setResultType(Long.class);
+//                log.info("lockLua -> {}",lockScript);
                 Long execute = (Long) redisTemplate.execute(defaultRedisScript, keys, args.toArray());
+                if (ObjectUtil.isEmpty(execute)) {
+                        log.info("katool=> {}成功抢到锁，锁名：{}，过期时间：{}，单位：{}",hashKey,lockName,expTime,timeUnit);
+                }
                 return execute;
         }
 
-        //加锁
-        @SneakyThrows
-        public Long luaToRedisByUnLock(String lockName){
-                long id = Thread.currentThread().getId();
+        //释放锁
+        @Transactional
+        public Long luaToRedisByUnLock(String lockName,Thread thread){
+                long id = thread==null?Thread.currentThread().getId():thread.getId();
                 //生成value1
                 String hashKey= DigestUtils.md5DigestAsHex(new String(id+serviceUUid).getBytes());
                 DefaultRedisScript defaultRedisScript = new DefaultRedisScript();
@@ -97,12 +133,32 @@ public class LockUtil {
                 args.add(hashKey);
                 defaultRedisScript.setScriptText(unLockScript);
                 defaultRedisScript.setResultType(Long.class);
+//                log.info("unlockLua -> {}",unLockScript);
                 Long remainLocks = (Long) redisTemplate.execute(defaultRedisScript, keys, args.toArray());
                 if (ObjectUtil.isEmpty(remainLocks)) {
-                        throw new KaToolException(ErrorCode.OPER_ERROR,"操作错误，this lock doesn't created!");
+                        log.error("katool=> {}释放锁失败，请释放自己的锁，锁名：{}",hashKey,lockName);
+                }
+                else if(remainLocks==0){
+                        log.info("katool=> {}成功释放锁，锁名：{}",hashKey,lockName);
+                        redisTemplate.convertAndSend(LOCK_MQ_NAME,lockName);
                 }
                 return remainLocks;
         }
+
+        public Boolean luaToRedisByDelay(String lockName,Long expTimeInc,TimeUnit timeUnit){
+                long id = Thread.currentThread().getId();
+                DefaultRedisScript defaultRedisScript = new DefaultRedisScript();
+                ArrayList<String> keys = new ArrayList<>();
+                ArrayList<Object> args = new ArrayList();
+                keys.add(lockName);
+                args.add(TimeoutUtils.toMillis(expTimeInc,timeUnit)+3000);
+                defaultRedisScript.setScriptText(delayLockScript);
+                defaultRedisScript.setResultType(Long.class);
+                Long expire = redisTemplate.getExpire(lockName);
+                Long execute = (Long) redisTemplate.execute(defaultRedisScript, keys, args.toArray());
+                return execute>expire;
+        }
+
 
         /**
          * @param obj
@@ -111,13 +167,9 @@ public class LockUtil {
          * @return
          * @throws KaToolException
          */
-        public boolean DistributedLock(Object obj,Long exptime,TimeUnit timeUnit) throws KaToolException {
+        public boolean DistributedLock(Object obj,Long exptime,TimeUnit timeUnit,Boolean isDelay) throws KaToolException {
                 if (ObjectUtil.isEmpty(obj)){
                         throw new KaToolException(ErrorCode.PARAMS_ERROR," Lock=> 传入obj为空");
-                }
-                Boolean isDelay=false;
-                if (ObjectUtil.isAllEmpty(exptime,timeUnit)){
-                        isDelay=true;
                 }
                 if(ObjectUtil.isEmpty(exptime)){
                         exptime= lockConfig.getInternalLockLeaseTime();;
@@ -127,74 +179,88 @@ public class LockUtil {
                 }
                 String lockName="Lock:"+obj.toString();
                 Long aLong = -1L;
-                //todo：这个地方的自旋锁，有点恶心，一直强行占着cpu，后面改进hh
-                while(aLong!=null){
-                        try {
-                                aLong=luaToRedisByLock(lockName, exptime, timeUnit);
-                                Thread.sleep(aLong.longValue()/3L);     // 初步改进：使用线程休眠，采用自旋锁+线程互斥
-                        } catch (InterruptedException e) {
-                                throw new RuntimeException(e);
+                // 进入互斥等待
+                Thread currentThread = Thread.currentThread();
+                while(true){
+                        String[] hashkey = new String[1];
+                                aLong=luaToRedisByLock(lockName, exptime, timeUnit, hashkey);
+                                if (aLong==null) {
+                                        break;
+                                }
+                        log.debug("katool=> {}未抢到锁，线程等待通知唤醒，最多等待时间：{}，锁名：{}，过期时间：{}，单位：{}",hashkey[0],aLong,lockName,exptime,timeUnit);
+//                                Thread.sleep(aLong/3);     // 初步改进：使用线程休眠，采用自旋锁+线程互斥
+                        ConcurrentLinkedQueue<Thread> threads = threadWaitQueue.get(lockName);
+                        if (ObjectUtil.isEmpty(threads)){
+                                threads=new ConcurrentLinkedQueue<>();
+                                log.info("新增线程进入等待lock:{}队列",lockName);
+                                threadWaitQueue.putIfAbsent(lockName,threads);
+                                log.debug("threadWaitQueue:{}",threadWaitQueue);;
                         }
+                        if (!threads.contains(currentThread)) {
+                                threads.add(currentThread);
+                        }
+                        log.debug("threadWaitQueue:{}",threadWaitQueue);;
+                        LockSupport.parkNanos(aLong);             // 等待通知唤醒
+                        log.debug("katool=> {}未抢到锁，线程被唤醒，重新抢锁，锁名：{}，过期时间：{}，单位：{}",hashkey[0],lockName,exptime,timeUnit);
                 }
-                log.info("katool=> LockUntil => DistributedLock:{} value:{} extime:{} timeUnit:{}",obj.toString(), "1", exptime, timeUnit);
                 //实现看门狗
                 if (isDelay){
-                        if (LockUtil.isOpenCorn==false){
-                                //如果同一个项目之前打开过，那么先关闭，避免重复启动
-                                CronUtil.stop();
-                                //支持秒级别定时任务
-                                CronUtil.setMatchSecond(true);
-                                //定时服务启动
-                                CronUtil.start();
-                                LockUtil.isOpenCorn=true;
-                        }
-                        Thread thread = Thread.currentThread();
+                        Thread thread = currentThread;
                         TimeUnit finalTimeUnit = timeUnit;
                         Long finalExptime = exptime;
-                        class TempClass{
-                                public String scheduleId;
-                        }
-                        final TempClass tempClass = new TempClass();
-                        tempClass.scheduleId=CronUtil.schedule("0/30 * * * * ?", new Task() {
+                        ScheduledFuture<?> scheduledFuture = ScheduledTaskUtil.submitTask(new Runnable() {
                                 @SneakyThrows
                                 @Override
-                                public void execute() {
-                                        //判断当前线程是否存活
-                                        boolean alive = thread.isAlive();
+                                public void run() {
+
+                                        boolean alive = thread.isAlive()||thread.isInterrupted();
+                                        ScheduledFuture future = threadWatchDog.get(thread.getId());
                                         if (alive) {
-                                                delayDistributedLock(obj, finalExptime>=3?(finalExptime / 3):finalExptime, finalTimeUnit);
+                                                log.info("Thread ID:{} 线程仍然存活，看门狗续期中...", thread.getId());
+                                                delayDistributedLock(obj, finalExptime >= 3 ? (finalExptime) / 3 : finalExptime, finalTimeUnit);
                                                 return;
                                         } else {
-                                                if (tempClass.scheduleId==null||"".equals(tempClass.scheduleId)){
+                                                if (future.isCancelled()||future.isDone()) {
+                                                        log.error("Thread ID:{} 线程已经死亡，但是没有对应的scheduleId", thread.getId());
                                                         return;
                                                 }
-                                                CronUtil.remove(tempClass.scheduleId);
-                                                DistributedUnLock(obj);
+                                                log.info("Thread ID:{} 线程死亡，看门狗自动解锁", thread.getId());
+                                              DistributedUnLock(obj,thread);
+                                                future.cancel(true);
                                                 return;
                                         }
                                 }
-                        });
+                        },finalExptime, finalExptime, finalTimeUnit);
+                        threadWatchDog.put(thread.getId(),scheduledFuture);
                 }
                 return BooleanUtil.isTrue(aLong!=null);
         }
+        ConcurrentHashMap<Long,ScheduledFuture> threadWatchDog=new ConcurrentHashMap<>();
         //延期
         public boolean delayDistributedLock(Object obj,Long exptime,TimeUnit timeUnit) throws KaToolException {
                 if (ObjectUtils.isEmpty(obj)){
                         throw new KaToolException(ErrorCode.PARAMS_ERROR," Lock=> 传入obj为空");
                 }
                 //本身就是一句话，具备原子性，没有必要使用lua脚本
-                Boolean expire = redisTemplate.expire("Lock:" + obj.toString(), exptime, timeUnit);
+                Boolean expire = luaToRedisByDelay("Lock:"+obj.toString(),exptime,timeUnit);
                 log.info("katool=> LockUntil => delayDistributedLock:{} value:{} extime:{} timeUnit:{}",obj.toString(), "1", exptime, timeUnit);
                 return BooleanUtil.isTrue(expire);
         }
         //释放锁
         public Long DistributedUnLock(Object obj) throws KaToolException {
+                Long remainLocks = DistributedUnLock(obj, null);
+                return remainLocks;
+        }
+
+        public Long DistributedUnLock(Object obj,Thread thread) throws KaToolException {
                 if (ObjectUtils.isEmpty(obj)){
                         throw new KaToolException(ErrorCode.PARAMS_ERROR," Lock=> 传入obj为空");
                 }
 //                由于这里有了可重入锁，不应该直接删除Boolean aBoolean = redisTemplate.delete("Lock:" + obj.toString());
-                Long remainLocks = luaToRedisByUnLock("Lock:" + obj.toString());
-                log.info("katool=> LockUntil => unDistributedLock:{} isdelete:{} ",obj.toString(),true);
+                Long remainLocks = luaToRedisByUnLock("Lock:" + obj.toString(),thread);
+                threadWatchDog.get(Thread.currentThread().getId()).cancel(true);
+                threadWatchDog.remove(Thread.currentThread().getId());
+                log.info("katool=> LockUntil => unDistributedLock:{} isdelete:{} watchDog is cancel and drop",obj.toString(),true);
                 return remainLocks;
         }
         //利用枚举类实现单例模式，枚举类属性为静态的
@@ -216,40 +282,6 @@ public class LockUtil {
         private LockUtil(){
 
         }
-        @Bean(name = "getLockScript")
-        private static String getLockScript(){
-                return "if redis.call(\"exists\",KEYS[1]) ~= 0 then\n" +
-//                "        -- 如果不是自己的锁\n" +
-                        "        if redis.call(\"exists\",KEYS[1],ARGS[1]) == 0 then\n" +
-//                "            -- 不是自己的锁\n" +
-                        "            return redis.call(\"pttl\",KEY[1]);\n" +
-                        "        end\n" +
-//                "        -- 如果是自己的锁就记录次数\n" +
-                        "        redis.call(\"hincrby\",KEY[1],ARGS[1],1);\n" +
-//                "        -- 延期\n" +
-                        "        redis.call(\"pexpire\",KEY[1],ARGS[2]);\n" +
-                        "    else\n" +
-                        "        redis.call(\"hset\",KEYS[1],ARGS[1],1);\n" +
-//                "        -- 设置默认延期\n" +
-                        "        redis.call(\"pexpire\",KEY[1],ARGS[2]);\n" +
-                        "    end\n" +
-//                "    -- 如果Lock不存在，那么就直接加上就可以了，hhh\n" +
-                        "    return nil;";
-        }
-        @Bean(name = "getUnLockScript")
-        private static String getUnLockScript(){
-                return "    if redis.call(\"exists\",KEYS[1]) ~= 0 then\n" +
-//                "        -- 如果是自己的锁\n" +
-                        "        if redis.call(\"hexists\",KEYS[1],ARGS[1]) ~= 0 then\n" +
-//                "            -- 如果是最后一层 直接delete\n" +
-                        "            if redis.call(\"hget\",KEYS[1],ARGS[1]) == 0 then\n" +
-                        "                redis.call(\"del\",KEYs[1]);\n" +
-                        "            else\n" +
-                        "                redis.call(\"hincrby\",KEY[1],ARGS[1],-1);\n" +
-                        "            end\n" +
-                        "        end\n" +
-                        "    end\n" +
-//                "    -- 如果Lock不存在，那么就return，hhh\n" +
-                        "    return nil;";
-        }
+
+
 }

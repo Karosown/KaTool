@@ -22,7 +22,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class expDateUtil extends DateUtil {
+public class ExpDateUtil extends DateUtil {
+
 
     public static String getCorn(Date date) throws KaToolException {
         if (ObjectUtils.isEmpty(date)) {
