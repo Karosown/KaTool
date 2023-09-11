@@ -200,8 +200,12 @@ public class LockUtil {
                                 threads.add(currentThread);
                         }
                         log.debug("threadWaitQueue:{}",threadWaitQueue);;
-                        LockSupport.parkNanos(aLong);             // 等待通知唤醒
+                        LockSupport.parkNanos(aLong);             // 等待通知唤醒 或者 超时自行处理
                         log.debug("katool=> {}未抢到锁，线程被唤醒，重新抢锁，锁名：{}，过期时间：{}，单位：{}",hashkey[0],lockName,exptime,timeUnit);
+                        // 线程被唤醒后删除自身的thread队列，避免死锁
+                        if (threads.contains(currentThread)) {
+                                threads.remove(currentThread);
+                        }
                 }
                 //实现看门狗
                 if (isDelay){

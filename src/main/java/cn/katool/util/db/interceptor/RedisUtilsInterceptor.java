@@ -36,15 +36,12 @@ public class RedisUtilsInterceptor {
 
     @Around("execution(* cn.katool.util.db.nosql.RedisUtils.get*(..))")
     public Object aroundByGet(ProceedingJoinPoint joinPoint) throws Throwable {
-        // 如果不采取内存缓存策略，那么直接走Redis
-        if (!casePolicy()){
-            return aroundByGetResponse(joinPoint);
-        }
         List<Object> args = Arrays.asList(joinPoint.getArgs());
 
         String key = args.get(0).toString();
         Object value = cachePolicy.get(key);
-        if (ObjectUtils.isEmpty(value)){
+        // 如果不采取内存缓存策略，那么直接走Redis
+        if (!casePolicy()||ObjectUtils.isEmpty(value)){
             return aroundByGetResponse(joinPoint);
         }
         log.info("RedisUtil-AOP => {}: 命中内存缓存，key:{}", joinPoint.getSignature().getName(),key);
@@ -54,16 +51,15 @@ public class RedisUtilsInterceptor {
     @Around("execution(* cn.katool.util.db.nosql.RedisUtils.remove(..))")
     public Object aroundByRemove(ProceedingJoinPoint joinPoint) throws Throwable {
         // 如果不采取内存缓存策略，那么直接走Redis
-        if (!casePolicy()){
-            return aroundByRemoveResponse(joinPoint);
-        }
-        List<Object> args = Arrays.asList(joinPoint.getArgs());
-        String key = args.get(0).toString();
-        Object value = cachePolicy.get(key);
-        if (!ObjectUtils.isEmpty(value)){
-            log.info("RedisUtil-AOP => {}: 命中内存缓存，key:{}", joinPoint.getSignature().getName(),key);
-            cachePolicy.remove(key);
-            log.info("RedisUtil-AOP => {}: 内存缓存删除成功，key:{}", joinPoint.getSignature().getName(),key);
+        if (casePolicy()){
+            List<Object> args = Arrays.asList(joinPoint.getArgs());
+            String key = args.get(0).toString();
+            Object value = cachePolicy.get(key);
+            if (!ObjectUtils.isEmpty(value)){
+                log.info("RedisUtil-AOP => {}: 命中内存缓存，key:{}", joinPoint.getSignature().getName(),key);
+                cachePolicy.remove(key);
+                log.info("RedisUtil-AOP => {}: 内存缓存删除成功，key:{}", joinPoint.getSignature().getName(),key);
+            }
         }
         return aroundByRemoveResponse(joinPoint);
     }
@@ -75,26 +71,26 @@ public class RedisUtilsInterceptor {
 
     @Around("execution(* cn.katool.util.db.nosql.RedisUtils.set*(..)) || execution(* cn.katool.util.db.nosql.RedisUtils.put*(..))")
     public Object aroundBySET(ProceedingJoinPoint joinPoint) throws Throwable {
-        if (!casePolicy()){
-            return aroundByGetResponse(joinPoint);
+
+        if (casePolicy()){
+            List<Object> args = Arrays.asList(joinPoint.getArgs());
+            String key = args.get(0).toString();
+            String value = args.get(1).toString();
+            cachePolicy.setOrUpdate(key,value);
         }
-        List<Object> args = Arrays.asList(joinPoint.getArgs());
-        String value = args.get(1).toString();
-        return aroundBySETResponse(joinPoint,value);
+        return aroundBySETResponse(joinPoint);
     }
 
 
-    private Object aroundBySETResponse(ProceedingJoinPoint joinPoint,Object value) throws Throwable  {
+    private Object aroundBySETResponse(ProceedingJoinPoint joinPoint) throws Throwable  {
         Object proceed = joinPoint.proceed();
-        if (!ObjectUtils.isEmpty(cachePolicy)){
-            cachePolicy.setOrUpdate(joinPoint.getArgs()[0].toString(),value);
-        }
+
         return proceed;
     }
 
     public Object aroundByGetResponse(ProceedingJoinPoint joinPoint) throws Throwable {
         Object proceed = joinPoint.proceed();
-        if (!ObjectUtils.isEmpty(cachePolicy)){
+        if (casePolicy()&&!ObjectUtils.isEmpty(proceed)){
             cachePolicy.setOrUpdate(joinPoint.getArgs()[0].toString(),proceed);
         }
         return proceed;
