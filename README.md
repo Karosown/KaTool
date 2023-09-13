@@ -21,7 +21,7 @@ git clone https://github.com/Karosown/KaTool.git
 <dependency>
     <groupId>cn.katool</groupId>
     <artifactId>KaTool</artifactId>
-    <version>{{KaTool.version}}</version>
+    <*version>{{KaTool.version}}</version>
 </dependency>
 ```
 ## Application.yml配置说明
