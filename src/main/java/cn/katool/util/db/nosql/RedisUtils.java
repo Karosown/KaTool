@@ -77,7 +77,11 @@ public class RedisUtils {
         return (b+1)<=1;//防止出现精度丢失问题
     }
     public boolean lock(Object lockObj){
-        return lockUtil.DistributedLock(lockObj);
+        return lockUtil.DistributedLock(lockObj,false);
+    }
+
+    public boolean lock(Object lockObj,Boolean isAgress){
+        return lockUtil.DistributedLock(lockObj,isAgress);
     }
     public  RedisTemplate obtainRedisTemplate(){
         return redisTemplate;
