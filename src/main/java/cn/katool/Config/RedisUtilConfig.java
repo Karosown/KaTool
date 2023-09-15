@@ -1,9 +1,11 @@
 package cn.katool.Config;
 
+import cn.katool.lock.LockUtil;
 import cn.katool.util.cache.policy.CachePolicy;
 import cn.katool.util.cache.policy.impl.CaffeineCachePolicy;
 import cn.katool.util.cache.policy.impl.DefaultCachePolicy;
 import cn.katool.util.cache.utils.CaffeineUtils;
+import cn.katool.util.db.nosql.RedisUtils;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import lombok.AllArgsConstructor;
@@ -18,7 +20,9 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.annotation.Order;
+import org.springframework.data.redis.core.RedisTemplate;
 
+import javax.annotation.Resource;
 import javax.validation.constraints.NotNull;
 import java.util.concurrent.TimeUnit;
 
@@ -85,4 +89,15 @@ public class RedisUtilConfig {
         return new CaffeineUtils<>(cache);
     }
 
+    @Resource
+    RedisTemplate redisTemplate;
+    @Bean
+    public RedisUtils RedisUtils(){
+        return RedisUtils.getInstance(redisTemplate);
+    }
+
+    @Bean
+    public LockUtil LockUtil(){
+        return LockUtil.getInstance();
+    }
 }

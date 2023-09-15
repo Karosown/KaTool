@@ -16,6 +16,7 @@ import cn.katool.Exception.KaToolException;
 import cn.katool.lock.LockUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Scope;
 import org.springframework.data.redis.core.*;
 import org.springframework.stereotype.Component;
@@ -29,13 +30,10 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * Redis工具类
  */
-@Component
-@Scope("prototype")
 @Slf4j
 public class RedisUtils {
     @Resource
     private RedisTemplate redisTemplate;
-
 
 
     private RedisUtils() {
@@ -47,7 +45,7 @@ public class RedisUtils {
         redisTemplate=restemp;
         return redisTemplate;
     }
-    @Resource(name = "LockUtil")
+    @Resource
     LockUtil lockUtil;
     private void expMsg(String Msg){
         if (obtainRedisTemplate()==null) {
@@ -324,17 +322,21 @@ public class RedisUtils {
         Singleton;
         RedisUtils redisUtils;
         private SingletonFactory(){
-            redisUtils=new RedisUtils();
+            redisUtils = new RedisUtils();
         }
         public RedisUtils getInstance(){
             return redisUtils;
         }
     }
-    @Bean(name = "RedisUtils")
-    public static RedisUtils getInstance(){
-        return SingletonFactory.Singleton.getInstance();
-    }
+
     public static RedisUtils getInstance(RedisTemplate redisTemplate){
-        return SingletonFactory.Singleton.getInstance();
+        RedisUtils instance = SingletonFactory.Singleton.getInstance();
+        instance.gaveRedisTemplate(redisTemplate);
+        return instance;
+    }
+
+    public static RedisUtils getInstance(){
+        RedisUtils instance = SingletonFactory.Singleton.getInstance();
+        return instance;
     }
 }

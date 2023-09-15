@@ -21,6 +21,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.TimeoutUtils;
@@ -40,8 +41,6 @@ import java.util.concurrent.locks.LockSupport;
 import static cn.katool.lock.LockMessageWatchDog.LOCK_MQ_NAME;
 import static cn.katool.lock.LockMessageWatchDog.threadWaitQueue;
 
-@Component
-@Scope("prototype")
 @Slf4j
 public class LockUtil {
         @Resource
@@ -287,7 +286,7 @@ public class LockUtil {
                         return lockUtil;
                 }
         }
-        @Bean("LockUtil")
+
         public static LockUtil getInstance(){
                 return SingletonFactory.Singleton.lockUtil;
         }
