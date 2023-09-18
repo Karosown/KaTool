@@ -90,6 +90,14 @@ public class RedisUtilConfig {
 
 ## Update
 
+v1.9.3 2023 / 09 /18
+
+- 修改RedisUtil中Zset为ZSet，更符合命名标准
+
+v1.9.2 2023 / 09 / 18
+
+- 解决RedisUtil中，多参数多级分类策略异常问题
+
 v1.9.1 2023 / 09 / 13
 
 - 新增掠夺式、非掠夺式分布式锁（区别在于是否在指定时间之后自觉拿线程锁）

@@ -114,26 +114,26 @@ public class RedisUtils {
         return delete;
     }
 
-    public Set getZset(String hashKey){
+    public List getZSet(String hashKey){
         if (obtainRedisTemplate()==null) {
             expMsg(null);
         }
         BoundZSetOperations boundZSetOperations = redisTemplate.boundZSetOps(hashKey);
         Set range = boundZSetOperations.range(0, boundZSetOperations.size());
-        return range;
+        return Arrays.asList(range.toArray());
     }
-    public Set getZsetByRange(String hashKey, Long start, Long end){
+    public List getZSetByRange(String hashKey, Long start, Long end){
         if (obtainRedisTemplate()==null) {
             expMsg(null);
         }
         if (!ObjectUtil.isAllNotEmpty(start,end)){
-            return getZset(hashKey);
+            return getZSet(hashKey);
         }
         BoundZSetOperations boundZSetOperations = redisTemplate.boundZSetOps(hashKey);
         Set range = boundZSetOperations.range(start, end);
-        return range;
+        return Arrays.asList(range.toArray());
     }
-    public Set<ZSetOperations.TypedTuple> getZsetWithScores(String hashKey){
+    public Set<ZSetOperations.TypedTuple> getZSetWithScores(String hashKey){
         if (obtainRedisTemplate()==null) {
             expMsg(null);
         }
@@ -141,7 +141,7 @@ public class RedisUtils {
         Set<ZSetOperations.TypedTuple> range = boundZSetOperations.rangeWithScores(0, boundZSetOperations.size());
         return range;
     }
-    public Boolean putZset(String hashKey,Object value,Double score){
+    public Boolean putZSet(String hashKey,Object value,Double score){
         if (obtainRedisTemplate()==null) {
             expMsg(null);
         }
@@ -156,7 +156,7 @@ public class RedisUtils {
         return false;
     }
 
-    public Boolean putZset(String hashKey,Set<ZSetOperations.TypedTuple> set){
+    public Boolean putZSet(String hashKey,Set<ZSetOperations.TypedTuple> set){
         if (obtainRedisTemplate()==null) {
             expMsg(null);
         }

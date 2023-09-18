@@ -51,7 +51,7 @@ public class RedisUtilsInterceptor {
         return value;
     }
 
-    @Around("execution(* cn.katool.util.db.nosql.RedisUtils.getZsetByRange(..))")
+    @Around("execution(* cn.katool.util.db.nosql.RedisUtils.getZSetByRange(..))")
     public Object aroundByGetByRange(ProceedingJoinPoint joinPoint) throws Throwable {
         List<Object> args = Arrays.asList(joinPoint.getArgs());
 
@@ -124,7 +124,7 @@ public class RedisUtilsInterceptor {
         return aroundBySETResponse(joinPoint);
     }
 
-    @Around("execution(* cn.katool.util.db.nosql.RedisUtils.putZset(*,*,Double))")
+    @Around("execution(* cn.katool.util.db.nosql.RedisUtils.putZSet(*,*,Double))")
     public Object aroundByPutZsetByScore(ProceedingJoinPoint joinPoint) throws Throwable {
         if (casePolicy()){
             List<Object> args = Arrays.asList(joinPoint.getArgs());
@@ -154,7 +154,7 @@ public class RedisUtilsInterceptor {
         return aroundBySETResponse(joinPoint);
     }
 
-    @Around("execution(* cn.katool.util.db.nosql.RedisUtils.putZset(*,*))")
+    @Around("execution(* cn.katool.util.db.nosql.RedisUtils.putZSet(*,*))")
     public Object aroundByPutZSet(ProceedingJoinPoint joinPoint) throws Throwable {
         if (casePolicy()){
             List<Object> args = Arrays.asList(joinPoint.getArgs());
