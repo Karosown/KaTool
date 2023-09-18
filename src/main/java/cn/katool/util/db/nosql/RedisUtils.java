@@ -11,6 +11,7 @@
 package cn.katool.util.db.nosql;
 
 
+import cn.hutool.core.util.ObjectUtil;
 import cn.katool.Exception.ErrorCode;
 import cn.katool.Exception.KaToolException;
 import cn.katool.lock.LockUtil;
@@ -119,6 +120,17 @@ public class RedisUtils {
         }
         BoundZSetOperations boundZSetOperations = redisTemplate.boundZSetOps(hashKey);
         Set range = boundZSetOperations.range(0, boundZSetOperations.size());
+        return range;
+    }
+    public Set getZsetByRange(String hashKey, Long start, Long end){
+        if (obtainRedisTemplate()==null) {
+            expMsg(null);
+        }
+        if (!ObjectUtil.isAllNotEmpty(start,end)){
+            return getZset(hashKey);
+        }
+        BoundZSetOperations boundZSetOperations = redisTemplate.boundZSetOps(hashKey);
+        Set range = boundZSetOperations.range(start, end);
         return range;
     }
     public Set<ZSetOperations.TypedTuple> getZsetWithScores(String hashKey){
