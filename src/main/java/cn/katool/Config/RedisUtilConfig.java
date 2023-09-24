@@ -13,6 +13,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.annotation.Bean;
@@ -46,6 +47,7 @@ public class RedisUtilConfig {
      */
     String policy="default";
     @Bean("katool-redisutil-cache")
+    @ConditionalOnMissingBean({Cache.class})
     public Cache<String, Object> Cache() {
         Cache<String, Object> build=null;
         switch (policy){
@@ -63,6 +65,7 @@ public class RedisUtilConfig {
     }
 
     @Bean("katool-redisutil-cachepolicy")
+    @ConditionalOnMissingBean({CachePolicy.class})
     public CachePolicy cachePolicy() {
         // 选择caffeine作为内存策略
         switch (policy) {
@@ -76,6 +79,7 @@ public class RedisUtilConfig {
     }
 
     @Bean(name = "CaffeineUtils")
+    @ConditionalOnMissingBean({CaffeineUtils.class})
     public CaffeineUtils<String,Object> getInstance(@NotNull Cache<String,Object> cache){
         log.info("【Bean工厂】CaffeineUtils => 初始化 CaffeineUtils 实例 {}",cache);
         if (!cache.getClass().getName().equals("com.github.benmanes.caffeine.cache.BoundedLocalCache$BoundedLocalManualCache")){

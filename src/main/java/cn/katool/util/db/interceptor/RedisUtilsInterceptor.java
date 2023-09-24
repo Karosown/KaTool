@@ -14,6 +14,7 @@ import org.springframework.util.ObjectUtils;
 import javax.annotation.Resource;
 import javax.print.attribute.AttributeSetUtilities;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Aspect
 @Component
@@ -48,6 +49,9 @@ public class RedisUtilsInterceptor {
         }
         log.info("RedisUtil-AOP => {}: 命中内存缓存，key:{}", joinPoint.getSignature().getName(),key);
         Object value = cachePolicy.get(key);
+        if (ObjectUtils.isEmpty(value)){
+            return aroundByGetResponse(joinPoint);
+        }
         return value;
     }
 
@@ -56,8 +60,8 @@ public class RedisUtilsInterceptor {
         List<Object> args = Arrays.asList(joinPoint.getArgs());
 
         String key = args.get(0).toString();
-        Integer start= (Integer) args.get(1);
-        Integer end = (Integer) args.get(2);
+        Long start= (Long) args.get(1);
+        Long end = (Long) args.get(2);
         // 如果不采取内存缓存策略，那么直接走Redis
         if (!casePolicy()){
             return aroundByGetResponse(joinPoint);
@@ -69,9 +73,12 @@ public class RedisUtilsInterceptor {
             return aroundByGetResponse(joinPoint);
         }
         Set<Object> values = entries.keySet();
-        List<Object> objects = Arrays.asList(values.toArray()).subList(start, end);
+        List<Object> objects = Arrays.asList(values.toArray()).subList(start.intValue(), end.intValue());
         values.clear();
         objects.forEach(value -> values.add(value));
+        if (ObjectUtils.isEmpty(values)){
+            return aroundByGetResponse(joinPoint);
+        }
         return values;
     }
 
@@ -133,6 +140,14 @@ public class RedisUtilsInterceptor {
             Double score = Double.valueOf(args.get(2).toString());
             Map<Object,Object> map= (Map<Object, Object>) cachePolicy.get(key);
             if (map==null||map.isEmpty()){
+                // 使用双检锁
+                if (map==null) {
+                    synchronized (key.intern()){
+                        if (map==null) {
+                            map = new ConcurrentHashMap<>();
+                        }
+                    }
+                }
                 map.put(value,score);
             }else {
                 PriorityQueue<Pair<Double,Object>> queue=new PriorityQueue<>();
@@ -143,11 +158,11 @@ public class RedisUtilsInterceptor {
                 });
                 queue.add(new Pair<>(score,value));
                 map.clear();
-                queue.forEach(entry->{
+                for (Pair<Double, Object> entry : queue) {
                     Double s = entry.getKey();
                     Object v = entry.getValue();
-                    map.put(v,s);
-                });
+                    map.put(v, s);
+                }
             }
             cachePolicy.setOrUpdate(key,map);
         }

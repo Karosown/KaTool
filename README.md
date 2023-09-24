@@ -89,7 +89,9 @@ public class RedisUtilConfig {
 如果使用默认策略（不采取缓存）直接`return new DefaultCachePolicy();`即可，KaTool自动装配了Caffeine的Cache，所以可以直接对CaffeineUtil进行使用
 
 ## Update
-
+v1.9.4 - Release 2023 / 09 / 24
+- 添加@ConditionalOnMissingBean注解，用户自定义配置不需要使用@Primary注解
+- 解决内存取得null，不名字Redis的问题
 v1.9.3 2023 / 09 /18
 
 - 修改RedisUtil中Zset为ZSet，更符合命名标准
