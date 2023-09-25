@@ -53,6 +53,7 @@ public class RedisUtilsInterceptor {
         if (ObjectUtils.isEmpty(value)){
             return aroundByGetResponse(joinPoint);
         }
+        log.info("RedisUtil-AOP => key:{} || value：{}", key,value);
         return value;
     }
 
