@@ -15,6 +15,7 @@ import javax.annotation.Resource;
 import javax.print.attribute.AttributeSetUtilities;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 @Aspect
 @Component
@@ -73,13 +74,11 @@ public class RedisUtilsInterceptor {
             return aroundByGetResponse(joinPoint);
         }
         Set<Object> values = entries.keySet();
-        List<Object> objects = Arrays.asList(values.toArray()).subList(start.intValue(), end.intValue());
-        values.clear();
-        objects.forEach(value -> values.add(value));
+        List<Object> objects = Arrays.asList(values.toArray()).subList(start.intValue(), end.intValue()>=0?end.intValue():values.size()+end.intValue()+1);
         if (ObjectUtils.isEmpty(values)){
             return aroundByGetResponse(joinPoint);
         }
-        return values;
+        return objects;
     }
 
     @Around("execution(* cn.katool.util.db.nosql.RedisUtils.remove(..))")
