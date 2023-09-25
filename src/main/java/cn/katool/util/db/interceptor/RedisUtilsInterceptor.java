@@ -125,6 +125,13 @@ public class RedisUtilsInterceptor {
             Object colomun = args.get(1).toString();
             Object value = args.get(2).toString();
             Map<Object,Object> map= (Map<Object, Object>) cachePolicy.get(key);
+            if (map==null) {
+                synchronized (key.intern()) {
+                    if (map == null) {
+                        map = new ConcurrentHashMap<>();
+                    }
+                }
+            }
             map.put(colomun,value);
             cachePolicy.setOrUpdate(key,map);
         }
@@ -176,6 +183,13 @@ public class RedisUtilsInterceptor {
             String key = args.get(0).toString();
             Set<ZSetOperations.TypedTuple> entries = (Set<ZSetOperations.TypedTuple>) args.get(1);
             Map<Object,Object> map= (Map<Object, Object>) cachePolicy.get(key);
+            if (map==null) {
+                synchronized (key.intern()) {
+                    if (map == null) {
+                        map = new ConcurrentHashMap<>();
+                    }
+                }
+            }
                 PriorityQueue<Pair<Double,Object>> queue=new PriorityQueue<>();
                 map.entrySet().forEach(entry->{
                     Double v = (Double) entry.getValue();
@@ -188,12 +202,12 @@ public class RedisUtilsInterceptor {
                     queue.add(new Pair<>(score,value));
                 });
                 map.clear();
-                queue.forEach(entry->{
-                    Double s = entry.getKey();
-                    Object v = entry.getValue();
-                    map.put(v,s);
-                });
-                cachePolicy.setOrUpdate(key,map);
+            for (Pair<Double, Object> entry : queue) {
+                Double s = entry.getKey();
+                Object v = entry.getValue();
+                map.put(v, s);
+            }
+            cachePolicy.setOrUpdate(key,map);
             }
         return aroundBySETResponse(joinPoint);
     }

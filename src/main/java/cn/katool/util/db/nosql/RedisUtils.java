@@ -32,9 +32,9 @@ import java.util.concurrent.atomic.AtomicReference;
  * Redis工具类
  */
 @Slf4j
-public class RedisUtils {
+public class RedisUtils<K,V> {
     @Resource
-    private RedisTemplate redisTemplate;
+    private RedisTemplate<K,V> redisTemplate;
 
 
     private RedisUtils() {
@@ -85,36 +85,36 @@ public class RedisUtils {
     public  RedisTemplate obtainRedisTemplate(){
         return redisTemplate;
     }
-    public Boolean setValue(String key, Object value, Long timeOut, TimeUnit timeUnit){
+    public Boolean setValue(K hashKey, V value, Long timeOut, TimeUnit timeUnit){
         if (obtainRedisTemplate()==null) {
             expMsg(null);
         }
-        redisTemplate.opsForValue().set(key,value,timeOut,timeUnit);
-        if (redisTemplate.opsForValue().get(key).equals(value)) {
+        redisTemplate.opsForValue().set(hashKey,value,timeOut,timeUnit);
+        if (redisTemplate.opsForValue().get(hashKey).equals(value)) {
             return true;
         }
         return false;
     }
 
-    public Boolean setValue(String key, Object value){
+    public Boolean setValue(K hashKey, V value){
         if (obtainRedisTemplate()==null) {
             expMsg(null);
         }
-        redisTemplate.opsForValue().set(key,value);
-        if (redisTemplate.opsForValue().get(key).equals(value)) {
+        redisTemplate.opsForValue().set(hashKey,value);
+        if (redisTemplate.opsForValue().get(hashKey).equals(value)) {
             return true;
         }
         return false;
     }
-    public Boolean remove(String key){
+    public Boolean remove(K hashKey){
         if (obtainRedisTemplate()==null) {
             expMsg(null);
         }
-        Boolean delete = redisTemplate.delete(key);
+        Boolean delete = redisTemplate.delete(hashKey);
         return delete;
     }
 
-    public List getZSet(String hashKey){
+    public List getZSet(K hashKey){
         if (obtainRedisTemplate()==null) {
             expMsg(null);
         }
@@ -122,7 +122,7 @@ public class RedisUtils {
         Set range = boundZSetOperations.range(0, boundZSetOperations.size());
         return Arrays.asList(range.toArray());
     }
-    public List getZSetByRange(String hashKey, Long start, Long end){
+    public List getZSetByRange(K hashKey, Long start, Long end){
         if (obtainRedisTemplate()==null) {
             expMsg(null);
         }
@@ -133,7 +133,7 @@ public class RedisUtils {
         Set range = boundZSetOperations.range(start, end);
         return Arrays.asList(range.toArray());
     }
-    public Set<ZSetOperations.TypedTuple> getZSetWithScores(String hashKey){
+    public Set<ZSetOperations.TypedTuple> getZSetWithScores(K hashKey){
         if (obtainRedisTemplate()==null) {
             expMsg(null);
         }
@@ -141,7 +141,7 @@ public class RedisUtils {
         Set<ZSetOperations.TypedTuple> range = boundZSetOperations.rangeWithScores(0, boundZSetOperations.size());
         return range;
     }
-    public Boolean putZSet(String hashKey,Object value,Double score){
+    public Boolean putZSet(K hashKey,V value,Double score){
         if (obtainRedisTemplate()==null) {
             expMsg(null);
         }
@@ -156,7 +156,7 @@ public class RedisUtils {
         return false;
     }
 
-    public Boolean putZSet(String hashKey,Set<ZSetOperations.TypedTuple> set){
+    public Boolean putZSet(K hashKey,Set<ZSetOperations.TypedTuple<V>> set){
         if (obtainRedisTemplate()==null) {
             expMsg(null);
         }
@@ -177,13 +177,13 @@ public class RedisUtils {
         return false;
     }
 
-    public Set getSet(String hashKey){
+    public Set getSet(K hashKey){
         if (obtainRedisTemplate()==null) {
             expMsg(null);
         }
         return redisTemplate.boundSetOps(hashKey).members();
     }
-    public Boolean putSet(String hashKey,Object value){
+    public Boolean putSet(K hashKey,V value){
         if (obtainRedisTemplate()==null) {
             expMsg(null);
         }
@@ -199,11 +199,11 @@ public class RedisUtils {
     }
     
     
-    public Boolean putSet(String hashKey, Set set){
+    public Boolean putSet(K hashKey, Set<V> set){
         if (obtainRedisTemplate()==null) {
             expMsg(null);
         }
-        Object[] objects = set.toArray();
+        V[] objects = (V[]) set.toArray();
         redisTemplate.opsForSet().add(hashKey,objects);
         Map<Object,Boolean> member = redisTemplate.opsForSet().isMember(hashKey, objects);
         AtomicReference<Boolean> isOk= new AtomicReference<>(true);
@@ -217,7 +217,7 @@ public class RedisUtils {
         });
         return isOk.get();
     }
-    public Boolean putSet(String hashKey,Object... value){
+    public Boolean putSet(K hashKey,V... value){
         if (obtainRedisTemplate()==null) {
             expMsg(null);
         }
@@ -234,7 +234,7 @@ public class RedisUtils {
         });
         return isOk.get();
     }
-    public Boolean pushMap(String hashKey, Map map){
+    public Boolean pushMap(K hashKey, Map map){
         if (obtainRedisTemplate()==null) {
             expMsg(null);
         }
@@ -247,7 +247,7 @@ public class RedisUtils {
         }
         return false;
     }
-    public Boolean pushMap(String hashKey,Object key,Object value){
+    public Boolean pushMap(K hashKey,Object key,V value){
         if (obtainRedisTemplate()==null) {
             expMsg(null);
         }
@@ -260,7 +260,7 @@ public class RedisUtils {
         return false;
     }
 
-    public Map getMap(String hashKey){
+    public Map getMap(K hashKey){
         if (obtainRedisTemplate()==null) {
             expMsg(null);
         }
@@ -270,25 +270,25 @@ public class RedisUtils {
         return null;
     }
 
-    public Object getValue(String hashKey){
+    public Object getValue(K hashKey){
         if (obtainRedisTemplate() == null) {
             expMsg(null);
         }
         return redisTemplate.opsForValue().get(hashKey);
     }
-    public Object getMap(String hashKey,Object key){
+    public Object getMap(K hashKey,Object key){
         if (obtainRedisTemplate()==null) {
             expMsg(null);
         }
         return redisTemplate.opsForHash().get(hashKey, key);
     }
-    public List getList(String hashKey){
+    public List getList(K hashKey){
         if (obtainRedisTemplate()==null) {
             expMsg(null);
         }
        return redisTemplate.opsForList().range(hashKey,0,-1);
     }
-    public Boolean pushList(String hashKey,Object object){
+    public Boolean pushList(K hashKey,V object){
         if (obtainRedisTemplate()==null) {
             expMsg(null);
         }
@@ -309,7 +309,7 @@ public class RedisUtils {
         }
         return false;
     }
-    public Boolean pushListLeft(String hashKey,Object object){
+    public Boolean pushListLeft(K hashKey,V object){
         if (obtainRedisTemplate()==null) {
             expMsg(null);
         }
