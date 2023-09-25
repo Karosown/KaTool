@@ -247,7 +247,7 @@ public class RedisUtils<K,V> {
         }
         return false;
     }
-    public Boolean pushMap(K hashKey,Object key,V value){
+    public <H extends K,HK,HV>Boolean pushMap(H hashKey,HK key,HV value){
         if (obtainRedisTemplate()==null) {
             expMsg(null);
         }
