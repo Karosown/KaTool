@@ -76,6 +76,7 @@ public class RedisUtilConfig {
     
 
     @Bean
+    @DependsOn({"KaTool-Init"})
     @Primary
     public CachePolicy cachePolicy() {
 

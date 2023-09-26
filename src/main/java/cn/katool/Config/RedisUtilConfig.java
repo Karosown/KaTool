@@ -16,10 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.*;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.redis.core.RedisTemplate;
 
@@ -47,6 +44,7 @@ public class RedisUtilConfig {
      */
     String policy="default";
     @Bean("katool-redisutil-cache")
+    @DependsOn({"KaTool-Init"})
     @ConditionalOnMissingBean({Cache.class})
     public Cache<String, Object> Cache() {
         Cache<String, Object> build=null;
@@ -65,6 +63,7 @@ public class RedisUtilConfig {
     }
 
     @Bean("katool-redisutil-cachepolicy")
+    @DependsOn({"KaTool-Init"})
     @ConditionalOnMissingBean({CachePolicy.class})
     public CachePolicy cachePolicy() {
         // 选择caffeine作为内存策略
@@ -79,8 +78,9 @@ public class RedisUtilConfig {
     }
 
     @Bean(name = "CaffeineUtils")
+    @DependsOn({"KaTool-Init"})
     @ConditionalOnMissingBean({CaffeineUtils.class})
-    public CaffeineUtils<String,Object> getInstance(@NotNull Cache<String,Object> cache){
+    public CaffeineUtils getInstance(@NotNull Cache<String,Object> cache){
         log.info("【Bean工厂】CaffeineUtils => 初始化 CaffeineUtils 实例 {}",cache);
         if (!cache.getClass().getName().equals("com.github.benmanes.caffeine.cache.BoundedLocalCache$BoundedLocalManualCache")){
             log.info("【Bean工厂】CaffeineUtils => cache实例不符，修改当前 CaffeineUtils 实例 {}",cache);
@@ -96,12 +96,26 @@ public class RedisUtilConfig {
     @Resource
     RedisTemplate redisTemplate;
     @Bean
+    @DependsOn({"KaTool-Init"})
     public RedisUtils RedisUtils(){
         return RedisUtils.getInstance(redisTemplate);
     }
 
     @Bean
+    @DependsOn({"KaTool-Init"})
     public LockUtil LockUtil(){
         return LockUtil.getInstance();
+    }
+
+    @Bean("KaTool-Init")
+    void katoolConfig(){
+        System.out.println(" ___  __    ________  _________  ________  ________  ___\n" +
+                "|\\  \\|\\  \\ |\\   __  \\|\\___   ___\\\\   __  \\|\\   __  \\|\\  \\\n" +
+                "\\ \\  \\/  /|\\ \\  \\|\\  \\|___ \\  \\_\\ \\  \\|\\  \\ \\  \\|\\  \\ \\  \\\n" +
+                " \\ \\   ___  \\ \\   __  \\   \\ \\  \\ \\ \\  \\\\\\  \\ \\  \\\\\\  \\ \\  \\\n" +
+                "  \\ \\  \\\\ \\  \\ \\  \\ \\  \\   \\ \\  \\ \\ \\  \\\\\\  \\ \\  \\\\\\  \\ \\  \\____\n" +
+                "   \\ \\__\\\\ \\__\\ \\__\\ \\__\\   \\ \\__\\ \\ \\_______\\ \\_______\\ \\_______\\\n" +
+                "    \\|__| \\|__|\\|__|\\|__|    \\|__|  \\|_______|\\|_______|\\|_______|\n" +
+                "                                                          1.9.4.RELEASE");
     }
 }

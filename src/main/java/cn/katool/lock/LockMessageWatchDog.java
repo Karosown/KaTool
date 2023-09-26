@@ -4,6 +4,7 @@ import cn.hutool.core.util.ObjectUtil;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -48,6 +49,7 @@ public class LockMessageWatchDog implements MessageListener {
     //表示监听一个频道
 
     @Bean
+    @DependsOn({"KaTool-Init"})
     public RedisMessageListenerContainer container(RedisConnectionFactory factory) {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(factory);

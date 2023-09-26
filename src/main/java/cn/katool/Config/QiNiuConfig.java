@@ -22,10 +22,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.apache.tomcat.util.buf.StringUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.*;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 
@@ -61,6 +58,7 @@ public class QiNiuConfig {
      * 注意所有Bean首字母小写后，昵称不能一样
      */
     @Bean
+    @DependsOn({"KaTool-Init"})
     public com.qiniu.storage.Configuration qiNiuConfig() throws Exception {
         switch (zone) {
             case "huadong":
@@ -82,6 +80,7 @@ public class QiNiuConfig {
      * 构建一个七牛上传工具实例
      */
     @Bean
+    @DependsOn({"KaTool-Init"})
     public UploadManager uploadManager() throws Exception {
         return new UploadManager(qiNiuConfig());
     }
@@ -90,6 +89,7 @@ public class QiNiuConfig {
      * 认证信息实例
      */
     @Bean
+    @DependsOn({"KaTool-Init"})
     public Auth auth() {
         return Auth.create(accessKey, secretKey);
     }
@@ -98,6 +98,7 @@ public class QiNiuConfig {
      * 构建七牛空间管理实例
      */
     @Bean
+    @DependsOn({"KaTool-Init"})
     public BucketManager bucketManager() throws Exception {
         return new BucketManager(auth(), qiNiuConfig());
     }
