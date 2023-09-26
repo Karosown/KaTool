@@ -48,11 +48,11 @@ public class RedisUtilsInterceptor {
         if (!casePolicy()){
             return aroundByGetResponse(joinPoint);
         }
-        log.info("RedisUtil-AOP => {}: 命中内存缓存，key:{}", joinPoint.getSignature().getName(),key);
         Object value = cachePolicy.get(key);
         if (ObjectUtils.isEmpty(value)){
             return aroundByGetResponse(joinPoint);
         }
+        log.info("RedisUtil-AOP => {}: 命中内存缓存，key:{}", joinPoint.getSignature().getName(),key);
         log.info("RedisUtil-AOP => key:{} || value：{}", key,value);
         return value;
     }
