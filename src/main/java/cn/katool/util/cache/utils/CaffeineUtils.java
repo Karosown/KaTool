@@ -61,7 +61,7 @@ public class CaffeineUtils<K,V> {
      *
      * @return Object
      */
-    public Map<K, V> getBatch(@NotNull List<String> key) {
+    public Map<K, V> getBatch(@NotNull List<Object> key) {
         //
         return cache.getAllPresent(key);
     }
@@ -150,7 +150,7 @@ public class CaffeineUtils<K,V> {
      *
      * @param key key
      */
-    public void delete(@NotNull List<String> key) {
+    public void delete(@NotNull List<Object> key) {
         //
         cache.invalidateAll(key);
     }

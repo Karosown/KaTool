@@ -8,24 +8,24 @@ import javax.annotation.Resource;
 
 public class CaffeineCachePolicy implements CachePolicy {
     @Resource
-    private CaffeineUtils<String,Object>  caffeineUtils;
+    private CaffeineUtils<Object,Object>  caffeineUtils;
 
     @Override
-    public Object get(String key) {
+    public Object get(Object key) {
         return caffeineUtils.get(key);
     }
 
     @Override
-    public void set(String key, Object value) {
+    public void set(Object key, Object value) {
         caffeineUtils.put(key,value);;
     }
 
     @Override
-    public void update(String key, Object value) {
+    public void update(Object key, Object value) {
         caffeineUtils.update(key,value);
     }
     @Override
-    public void setOrUpdate(String key, Object value) {
+    public void setOrUpdate(Object key, Object value) {
         if (caffeineUtils.contains(key)){
             caffeineUtils.update(key,value);
         }
@@ -35,7 +35,7 @@ public class CaffeineCachePolicy implements CachePolicy {
     }
 
     @Override
-    public void remove(String key) {
+    public void remove(Object key) {
         caffeineUtils.delete(key);
     }
 

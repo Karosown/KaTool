@@ -110,8 +110,8 @@ public class RedisUtilsInterceptor {
 
         if (casePolicy()){
             List<Object> args = Arrays.asList(joinPoint.getArgs());
-            String key = args.get(0).toString();
-            String value = args.get(1).toString();
+            Object key = args.get(0).toString();
+            Object value = args.get(1);
             cachePolicy.setOrUpdate(key,value);
         }
         return aroundBySETResponse(joinPoint);

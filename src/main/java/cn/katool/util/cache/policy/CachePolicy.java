@@ -2,15 +2,15 @@ package cn.katool.util.cache.policy;
 
 public interface CachePolicy {
 
-    Object  get(String key);
+    Object  get(Object key);
 
-    void    set(String key, Object value);
+    void    set(Object key, Object value);
 
-    void update(String key, Object value);
+    void update(Object key, Object value);
 
-    void setOrUpdate(String key, Object value);
+    void setOrUpdate(Object key, Object value);
 
-    void    remove(String key);
+    void    remove(Object key);
 
     void    clear();
 
