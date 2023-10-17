@@ -12,20 +12,16 @@ package cn.katool.util.db.nosql;
 
 
 import cn.hutool.core.util.ObjectUtil;
-import cn.katool.Exception.ErrorCode;
 import cn.katool.Exception.KaToolException;
 import cn.katool.lock.LockUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.Scope;
 import org.springframework.data.redis.core.*;
-import org.springframework.stereotype.Component;
-import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -121,6 +117,34 @@ public class RedisUtils<K,V> {
         BoundZSetOperations boundZSetOperations = redisTemplate.boundZSetOps(hashKey);
         Set range = boundZSetOperations.range(0, boundZSetOperations.size());
         return Arrays.asList(range.toArray());
+    }
+
+    public List getZSetAsync(K hashKey){
+        if (obtainRedisTemplate()==null) {
+            expMsg(null);
+        }
+        BoundZSetOperations boundZSetOperations = redisTemplate.boundZSetOps(hashKey);
+        Set<ZSetOperations.TypedTuple<V>> allRange = new TreeSet<>((a,v)->{
+            return a.getScore().compareTo(v.getScore());
+        });
+        Long size = boundZSetOperations.size();
+        AtomicLong start = new AtomicLong(0);
+        Long end = size;
+        List<CompletableFuture> completableFutureList= new ArrayList<>();
+        while( start.get() !=end ){
+            CompletableFuture<Void> voidCompletableFuture = CompletableFuture.runAsync(() -> {
+                Set<ZSetOperations.TypedTuple<V>> range = boundZSetOperations.rangeWithScores(start.get(), start.incrementAndGet());
+                allRange.addAll(range);
+            });
+           completableFutureList.add(voidCompletableFuture);
+        }
+        CompletableFuture.allOf(completableFutureList.toArray(new CompletableFuture[0])).join();
+        Iterator<ZSetOperations.TypedTuple<V>> iterator = allRange.iterator();
+        List<V> list = new ArrayList<>();
+        while (iterator.hasNext()){
+            list.add(iterator.next().getValue());
+        }
+        return list;
     }
     public List getZSetByRange(K hashKey, Long start, Long end){
         if (obtainRedisTemplate()==null) {

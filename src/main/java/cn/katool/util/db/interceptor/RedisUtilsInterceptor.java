@@ -157,7 +157,9 @@ public class RedisUtilsInterceptor {
                 }
                 map.put(value,score);
             }else {
-                PriorityQueue<Pair<Double,Object>> queue=new PriorityQueue<>();
+                PriorityQueue<Pair<Double,Object>> queue=new PriorityQueue<>((pair1,pair2)->{
+                    return pair1.getKey()<pair2.getKey()?1:-1;
+                });
                 map.entrySet().forEach(entry->{
                     Double v = (Double) entry.getValue();
                     Object k = entry.getKey();
