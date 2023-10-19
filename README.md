@@ -92,6 +92,7 @@ public class RedisUtilConfig {
 ## Update
 v1.9.5 - ALPHA 2023 / 10 / 16
 - 将RedisUtil并行获取ZSet数据加入日程
+- 10 / 19 新增LeftPopList和RightPopList并且添加代理，暂未经过严格测试
 v1.9.4 - Release 2023 / 09 / 24
 - 添加@ConditionalOnMissingBean注解，用户自定义配置不需要使用@Primary注解
 - 解决内存取得null，不名字Redis的问题

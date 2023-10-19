@@ -352,6 +352,16 @@ public class RedisUtils<K,V> {
         }
         return false;
     }
+    public List leftPopList(K hashKey,Integer count){
+        if (obtainRedisTemplate()==null) {
+            expMsg(null);
+        }
+        if (count==null) {
+            count = 1;
+        }
+        List<V> list = redisTemplate.opsForList().leftPop(hashKey,count);
+        return list;
+    }
 
     //利用枚举类实现单例模式，枚举类属性为静态的
     private enum SingletonFactory{

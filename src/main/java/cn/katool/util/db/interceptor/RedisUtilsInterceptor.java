@@ -57,6 +57,49 @@ public class RedisUtilsInterceptor {
         return value;
     }
 
+    @Around("execution(* cn.katool.util.db.nosql.RedisUtils.leftPopList(*,*))")
+    public Object aroundByLeftPopGet(ProceedingJoinPoint joinPoint) throws Throwable {
+        List<Object> args = Arrays.asList(joinPoint.getArgs());
+
+        String key = args.get(0).toString();
+        Long cont = (Long) args.get(1);
+        // 如果不采取内存缓存策略，那么直接走Redis
+        if (!casePolicy()){
+            return aroundByGetResponse(joinPoint);
+        }
+        List value = (List) cachePolicy.get(key);
+        if (ObjectUtils.isEmpty(value)||value.size()<cont){
+            return aroundByGetResponse(joinPoint);
+        }
+        List cache = value.subList(Math.toIntExact(cont), value.size());
+        value=value.subList(0, Math.toIntExact(cont));
+        cachePolicy.setOrUpdate(key,cache);
+        log.info("RedisUtil-AOP => {}: 命中内存缓存，key:{}", joinPoint.getSignature().getName(),key);
+        log.info("RedisUtil-AOP => key:{} || value：{}", key,value);
+        return value;
+    }
+    @Around("execution(* cn.katool.util.db.nosql.RedisUtils.leftPopList(*,*))")
+    public Object aroundByRightPopGet(ProceedingJoinPoint joinPoint) throws Throwable {
+        List<Object> args = Arrays.asList(joinPoint.getArgs());
+
+        String key = args.get(0).toString();
+        Long cont = (Long) args.get(1);
+        // 如果不采取内存缓存策略，那么直接走Redis
+        if (!casePolicy()){
+            return aroundByGetResponse(joinPoint);
+        }
+        List value = (List) cachePolicy.get(key);
+        if (ObjectUtils.isEmpty(value)||value.size()<cont){
+            return aroundByGetResponse(joinPoint);
+        }
+        List cache = value.subList(0, Math.toIntExact(cont));
+        value=value.subList(Math.toIntExact(value.size() - cont),value.size());
+        cachePolicy.setOrUpdate(key,cache);
+        log.info("RedisUtil-AOP => {}: 命中内存缓存，key:{}", joinPoint.getSignature().getName(),key);
+        log.info("RedisUtil-AOP => key:{} || value：{}", key,value);
+        return value;
+    }
+
     @Around("execution(* cn.katool.util.db.nosql.RedisUtils.getZSetByRange(..))")
     public Object aroundByGetByRange(ProceedingJoinPoint joinPoint) throws Throwable {
         List<Object> args = Arrays.asList(joinPoint.getArgs());
