@@ -78,7 +78,7 @@ public class RedisUtilsInterceptor {
         log.info("RedisUtil-AOP => key:{} || value：{}", key,value);
         return value;
     }
-    @Around("execution(* cn.katool.util.db.nosql.RedisUtils.leftPopList(*,*))")
+    @Around("execution(* cn.katool.util.db.nosql.RedisUtils.rightPopList(*,*))")
     public Object aroundByRightPopGet(ProceedingJoinPoint joinPoint) throws Throwable {
         List<Object> args = Arrays.asList(joinPoint.getArgs());
 

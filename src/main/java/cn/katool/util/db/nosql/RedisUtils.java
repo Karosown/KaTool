@@ -352,12 +352,23 @@ public class RedisUtils<K,V> {
         }
         return false;
     }
-    public List leftPopList(K hashKey,Integer count){
+    public List leftPopList(K hashKey,Long count){
         if (obtainRedisTemplate()==null) {
             expMsg(null);
         }
         if (count==null) {
-            count = 1;
+            count = 1L;
+        }
+        List<V> list = redisTemplate.opsForList().leftPop(hashKey,count);
+        return list;
+    }
+
+    public List rightPopList(K hashKey,Long count){
+        if (obtainRedisTemplate()==null) {
+            expMsg(null);
+        }
+        if (count==null) {
+            count = 1L;
         }
         List<V> list = redisTemplate.opsForList().leftPop(hashKey,count);
         return list;
