@@ -1,21 +1,21 @@
-<img src="http://7n.cdn.wzl1.top/typora/img/KaTool.png" alt="KaTool" style="zoom:200%;" />
+![KaTool](http://gd.7n.cdn.wzl1.top/typora/img/KaTool.png)
 
 &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;![SpringBoot-2.7.0](https://img.shields.io/badge/SpringBoot-2.7.0-green)&emsp;&emsp;&emsp;![Hutool-5.8.10](https://img.shields.io/badge/Hutool-5.8.10-green)
 
 # KaTool (卡托)
+
 KaTool - 一款拥有七牛云文件处理、IP工具、IO工具、图形验证码生成、随机验证码生成、Date工具、Base64工具、函数式接口、分布式锁实现的Java开发工具类，依赖于SpringBoot框架<br>
 
 **Tips：该Starter为个人项目使用，Starter制作仅满足于个人目前的开发需求，也只是个人开发，目前还在孵化阶段，工具类和其他同类作品相比不全面望谅解，在图片写入OutputStream时，使用到了Hutool**
-## 安装Katool
-### git clone(仅第一次使用)
-```shell
-git clone https://github.com/Karosown/KaTool.git
-```
-### 打开项目
-选择Maven install
-![image-20230105233852328](http://7n.cdn.wzl1.top/typora/img/image-20230105233852328.png)
-### pom.xml
+
+## 快速入门
+
+### Maven中央仓库引入
+
+#### pom.xml
+
 在自己的项目中引入依赖
+
 ```xml
 <!-- https://mvnrepository.com/artifact/cn.katool/KaTool -->
 <dependency>
@@ -24,37 +24,57 @@ git clone https://github.com/Karosown/KaTool.git
     <*version>{{KaTool.version}}</version>
 </dependency>
 ```
+
+
+
+### 本地部署
+
+#### git clone(仅第一次使用)
+
+```shell
+git clone https://github.com/Karosown/KaTool.git
+```
+
+#### 打开项目
+
+选择Maven install
+![image-20231123141406759](http://gd.7n.cdn.wzl1.top/typora/img/image-20231123141406759.png)
+
 ## Application.yml配置说明
 
 使用分布式锁前请开启Redistemplate的事务支持
 
 ```yaml
 katool:
-  # 七牛云配置 所有值都必须存在,没有的话留空,不能缺
+   七牛云配置 所有值都必须存在,没有的话留空,不能缺
       qiniu:
         accessKey: #你的七牛云accessKey
         secretKey: #你的七牛云secretKey
-        # 对象储存
-        bucket: # 空间名称
-        zone: # 存储区域
-        domain: # 访问域名
-        basedir: # 文件存储根目录
+         对象储存
+        bucket:  空间名称
+        zone:  存储区域
+        domain:  访问域名
+        basedir:  文件存储根目录
     lock:
-        internalLockLeaseTime: 30   # 分布式锁默认租约时间，建议别设太小，不然和没有设置毫无区别
-        timeUnit: seconds           # 租约时间单位
+        internalLockLeaseTime: 30    分布式锁默认租约时间，建议别设太小，不然和没有设置毫无区别
+        timeUnit: seconds            租约时间单位
     util:
         redis:
-            policy: "caffeine"      # 选择内存缓存策略，caffeine
-            exptime: {5*60*1000}              # LFU过期时间
-            time-unit: milliseconds #  过期时间单位
+            policy: "caffeine"       选择内存缓存策略，caffeine
+            exptime: {5*60*1000}               LFU过期时间
+            time-unit: milliseconds   过期时间单位
 ```
+
 ## Nginx配置
+
 Nginx反向代理后获取真实来源IP
+
 ```Nginx.config-server
 proxy_set_header   X-Real-IP        $remote_addr;
 proxy_set_header   X-Real-Port      $remote_port;
 proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
 ```
+
 ## RedisUtilConfig
 
 如何自定义Redis多层缓存策略
@@ -90,14 +110,26 @@ public class RedisUtilConfig {
 如果使用默认策略（不采取缓存）直接`return new DefaultCachePolicy();`即可，KaTool自动装配了Caffeine的Cache，所以可以直接对CaffeineUtil进行使用
 
 ## Update
-v1.9.5 - ALPHA 2023 / 10 / 16
+
+v1.9.5
+
+- BETA 2023 / 11 / 27
+
+- 新增`SpringContextUtils`来对SpringBean进行注册、判断、卸载
+- 新增`ClassUtil`来对类进行加载、类初始化，默认采用当前线程的类加载器为父类加载器
+
+- 新增`KaToolClassLoader`,可以自定义父类加载器，用于加载外部class文件（~~为什么这样做，不用UrlLoader，主要是之前项目写一个任务模块，需要从外部导入，但是使用UrlLoader来导入本地class文件没有用，所以我选择使用以字节加载进JVM，再生成对象~~）
+
+， - ALPHA 2023 / 10 / 16
+
 - 将RedisUtil并行获取ZSet数据加入日程
 - 10 / 19 新增LeftPopList和RightPopList并且添加代理，暂未经过严格测试
+
 v1.9.4 - Release 2023 / 09 / 24
+
 - 添加@ConditionalOnMissingBean注解，用户自定义配置不需要使用@Primary注解
 - 解决内存取得null，不名字Redis的问题
-v1.9.3 2023 / 09 /18
-
+  v1.9.3 2023 / 09 /18
 - 修改RedisUtil中Zset为ZSet，更符合命名标准
 
 v1.9.2 2023 / 09 / 18
@@ -187,6 +219,7 @@ proxy_set_header   X-Real-IP        $remote_addr;
 proxy_set_header   X-Real-Port      $remote_port;
 proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
 ```
+
 <br>
 v1.3.0<br>
 图形验证码生成<br>
