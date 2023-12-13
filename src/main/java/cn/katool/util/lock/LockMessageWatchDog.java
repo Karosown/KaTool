@@ -1,4 +1,4 @@
-package cn.katool.lock;
+package cn.katool.util.lock;
 
 import cn.hutool.core.util.ObjectUtil;
 import lombok.SneakyThrows;

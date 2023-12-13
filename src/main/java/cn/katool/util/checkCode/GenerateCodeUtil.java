@@ -1,4 +1,4 @@
-package cn.katool.CheckCode;
+package cn.katool.util.checkCode;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -15,7 +15,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.Locale;
 import java.util.Random;
 @Data
@@ -297,6 +296,6 @@ public class GenerateCodeUtil {
     }
     //通过时间获取加密密钥key
     private String getTIMEstr() {
-        return String.valueOf(((new Date().getTime())<<4|1024|8086)%3000);
+        return String.valueOf(((System.currentTimeMillis())<<4|1024|8086)%3000);
     }
 }

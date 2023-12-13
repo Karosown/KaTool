@@ -8,7 +8,7 @@
  * @Blog: https://www.wzl1.top/
  */
 
-package cn.katool.iputils;
+package cn.katool.util.iputils;
 
 import org.springframework.stereotype.Component;
 

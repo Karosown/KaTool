@@ -8,38 +8,32 @@
  * @Blog: https://www.wzl1.top/
  */
 
-package cn.katool.lock;
+package cn.katool.util.lock;
 
 import cn.hutool.core.util.BooleanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.RandomUtil;
-import cn.katool.Config.LockConfig;
+import cn.katool.config.util.LockConfig;
 import cn.katool.Exception.ErrorCode;
 import cn.katool.Exception.KaToolException;
 import cn.katool.util.ScheduledTaskUtil;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.TimeoutUtils;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 import org.springframework.util.ObjectUtils;
-import sun.misc.Queue;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.LockSupport;
 
-import static cn.katool.lock.LockMessageWatchDog.LOCK_MQ_NAME;
-import static cn.katool.lock.LockMessageWatchDog.threadWaitQueue;
+import static cn.katool.util.lock.LockMessageWatchDog.LOCK_MQ_NAME;
+import static cn.katool.util.lock.LockMessageWatchDog.threadWaitQueue;
 
 @Slf4j
 public class LockUtil {

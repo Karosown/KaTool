@@ -8,13 +8,11 @@
  * @Blog: https://www.wzl1.top/
  */
 
-package cn.katool.Config;
+package cn.katool.config.util;
 
 import lombok.*;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.*;
-import org.springframework.stereotype.Component;
 
 import java.util.concurrent.TimeUnit;
 

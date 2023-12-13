@@ -1,6 +1,6 @@
-package cn.katool.Config;
+package cn.katool.config.util;
 
-import cn.katool.lock.LockUtil;
+import cn.katool.util.lock.LockUtil;
 import cn.katool.util.cache.policy.CachePolicy;
 import cn.katool.util.cache.policy.impl.CaffeineCachePolicy;
 import cn.katool.util.cache.policy.impl.DefaultCachePolicy;
@@ -11,13 +11,10 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.annotation.*;
-import org.springframework.core.annotation.Order;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import javax.annotation.Resource;
@@ -116,6 +113,6 @@ public class RedisUtilConfig {
                 "  \\ \\  \\\\ \\  \\ \\  \\ \\  \\   \\ \\  \\ \\ \\  \\\\\\  \\ \\  \\\\\\  \\ \\  \\____\n" +
                 "   \\ \\__\\\\ \\__\\ \\__\\ \\__\\   \\ \\__\\ \\ \\_______\\ \\_______\\ \\_______\\\n" +
                 "    \\|__| \\|__|\\|__|\\|__|    \\|__|  \\|_______|\\|_______|\\|_______|\n" +
-                "                                                          1.9.5.BETA");
+                "                                                          1.9.5.GAMA");
     }
 }

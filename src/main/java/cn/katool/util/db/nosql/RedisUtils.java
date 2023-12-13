@@ -13,7 +13,7 @@ package cn.katool.util.db.nosql;
 
 import cn.hutool.core.util.ObjectUtil;
 import cn.katool.Exception.KaToolException;
-import cn.katool.lock.LockUtil;
+import cn.katool.util.lock.LockUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.*;
 

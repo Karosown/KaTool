@@ -8,28 +8,24 @@
  * @Blog: https://www.wzl1.top/
  */
 
-package cn.katool.Config;
+package cn.katool.config.store;
 
-import cn.hutool.core.util.StrUtil;
 import com.qiniu.common.Zone;
 import com.qiniu.storage.BucketManager;
 import com.qiniu.storage.UploadManager;
 import com.qiniu.util.Auth;
-import io.netty.util.internal.StringUtil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.apache.tomcat.util.buf.StringUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.*;
 import org.springframework.stereotype.Component;
-import org.springframework.util.ObjectUtils;
 
 @Configuration("QiNiuConfig")
 @Component
 @ToString
-@ConfigurationProperties("katool.qiniu")
+@ConfigurationProperties("katool.store.qiniu")
 @AllArgsConstructor
 @NoArgsConstructor
 @Data

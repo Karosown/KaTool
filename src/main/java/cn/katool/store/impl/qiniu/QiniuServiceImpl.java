@@ -8,10 +8,10 @@
  * @Blog: https://www.wzl1.top/
  */
 
-package cn.katool.qiniu.impl;
+package cn.katool.store.impl.qiniu;
 import cn.katool.Exception.KaToolException;
-import cn.katool.io.FileUtils;
-import cn.katool.qiniu.IQiniuService;
+import cn.katool.util.io.FileUtils;
+import cn.katool.store.interfaces.IQiniuService;
 import com.qiniu.common.QiniuException;
 import com.qiniu.http.Response;
 import com.qiniu.storage.BucketManager;
@@ -27,10 +27,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.InputStream;
-import java.util.Date;
 
 @Data
-@Service
+@Service("Store-Qiniu")
 @Slf4j
 public class QiniuServiceImpl implements IQiniuService, InitializingBean {
 
@@ -105,16 +104,21 @@ public class QiniuServiceImpl implements IQiniuService, InitializingBean {
     @Override
     public String uploadFile(File file, String dir,String fileName,boolean isCompulsion) throws Exception {
         if (isCompulsion){
-            if (isExist(dir,fileName))
+            if (isExist(dir,fileName)) {
                 delete(dir,fileName);
+            }
         }
         String mdir="";
         if (basedir!=null){
-            if(basedir.charAt(0)=='/') basedir=basedir.substring(1);
+            if(basedir.charAt(0)=='/') {
+                basedir=basedir.substring(1);
+            }
             mdir+=basedir+'/';
         }
         if (dir!=null){
-            if (dir.charAt(0)=='/') dir=dir.substring(1);
+            if (dir.charAt(0)=='/') {
+                dir=dir.substring(1);
+            }
             mdir+=dir+'/';
         }
         fileName=mdir+fileName;
@@ -127,7 +131,7 @@ public class QiniuServiceImpl implements IQiniuService, InitializingBean {
         if (response.statusCode == 200) {
             //通过时间戳实现CDN缓存强制刷新
             //https://developer.qiniu.com/fusion/kb/1325/refresh-the-cache-and-the-effect-of-time
-            fileName+="?datestamp="+new Date().getTime();
+            fileName+="?datestamp="+System.currentTimeMillis();
             log.info("UPLOAD -- > 七牛云:"+"http://" + domain + "/" + fileName);
             return "http://" + domain + "/" + fileName;
         }
@@ -155,11 +159,15 @@ public class QiniuServiceImpl implements IQiniuService, InitializingBean {
         }
         String mdir="";
         if (basedir!=null){
-            if(basedir.charAt(0)=='/') basedir=basedir.substring(1);
+            if(basedir.charAt(0)=='/') {
+                basedir=basedir.substring(1);
+            }
             mdir+=basedir+'/';
         }
         if (dir!=null){
-            if (dir.charAt(0)=='/') dir=dir.substring(1);
+            if (dir.charAt(0)=='/') {
+                dir=dir.substring(1);
+            }
             mdir+=dir+'/';
         }
         fileName=mdir+fileName;
@@ -172,7 +180,7 @@ public class QiniuServiceImpl implements IQiniuService, InitializingBean {
         if (response.statusCode == 200) {
             //通过时间戳实现CDN缓存强制刷新
             //https://developer.qiniu.com/fusion/kb/1325/refresh-the-cache-and-the-effect-of-time
-            fileName+="?datestamp="+new Date().getTime();
+            fileName+="?datestamp="+System.currentTimeMillis();
             log.info("UPLOAD -- > 七牛云:"+"http://" + domain + "/" + fileName);
             return "http://" + domain + "/" + fileName;
         }
@@ -189,11 +197,15 @@ public class QiniuServiceImpl implements IQiniuService, InitializingBean {
     public String delete(String dir,String fileName) throws QiniuException {
         String mdir="";
         if (basedir!=null){
-            if(basedir.charAt(0)=='/') basedir=basedir.substring(1);
+            if(basedir.charAt(0)=='/') {
+                basedir=basedir.substring(1);
+            }
             mdir+=basedir+'/';
         }
         if (dir!=null){
-            if (dir.charAt(0)=='/') dir=dir.substring(1);
+            if (dir.charAt(0)=='/') {
+                dir=dir.substring(1);
+            }
             mdir+=dir+'/';
         }
         fileName=mdir+fileName;

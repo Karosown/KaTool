@@ -1,4 +1,4 @@
-package cn.katool.qiniu;
+package cn.katool.store;
 
 import cn.katool.Exception.KaToolException;
 import com.qiniu.common.QiniuException;
@@ -6,7 +6,7 @@ import com.qiniu.common.QiniuException;
 import java.io.File;
 import java.io.InputStream;
 
-public interface IQiniuService {
+public interface StoreService {
     String getOriginName(String URL);
     /**
      * 判断文件是否存在
@@ -34,7 +34,7 @@ public interface IQiniuService {
      * @return java.lang.String 上传成功并返回地址，携带cdn刷新
      * @throws QiniuException 上传异常
      */
-    String uploadFile(File file, String dir,String fileName_fast, String fileName_second,boolean isCompulsion) throws Exception;
+    String uploadFile(File file, String dir, String fileName_fast, String fileName_second, boolean isCompulsion) throws Exception;
 
     /**
      * 以文件的形式上传
@@ -58,11 +58,11 @@ public interface IQiniuService {
      * @return java.lang.String 上传成功并返回地址，携带cdn刷新
      * @throws QiniuException 上传异常
      */
-    String uploadFile(InputStream inputStream, String dir,String fileName_fast, String fileName_second,boolean isCompulsion) throws Exception;
+    String uploadFile(InputStream inputStream, String dir, String fileName_fast, String fileName_second, boolean isCompulsion) throws Exception;
 
     /**
      * 以流的形式上传
-     * 
+     *
      * @param inputStream 输入流
      * @param dir   上传目录
      * @param fileName 文件名

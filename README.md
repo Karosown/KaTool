@@ -113,14 +113,37 @@ public class RedisUtilConfig {
 
 v1.9.5
 
-- BETA 2023 / 11 / 27
+GAMA 2023 / 12 /13
+
+- 新增阿里云OSS对象存储、腾讯云OSS对象存储
+
+- 对七牛云文件存储进行包迁移，架构有一点变化，如果介意的不要更新
+
+- OSS存储配置格式统一化
+
+  ```yaml
+  katool:
+  	store:
+  		qiniu:
+  			****
+  		aliyun:
+  			****
+          tencent:
+          	****
+  ```
+
+- 删除MethodIntefaceUtil，因为这个很鸡肋，而且JDK已经有了Function等接口
+
+- 优化其他工具类架构
+
+BETA 2023 / 11 / 27
 
 - 新增`SpringContextUtils`来对SpringBean进行注册、判断、卸载
 - 新增`ClassUtil`来对类进行加载、类初始化，默认采用当前线程的类加载器为父类加载器
 
 - 新增`KaToolClassLoader`,可以自定义父类加载器，用于加载外部class文件（~~为什么这样做，不用UrlLoader，主要是之前项目写一个任务模块，需要从外部导入，但是使用UrlLoader来导入本地class文件没有用，所以我选择使用以字节加载进JVM，再生成对象~~）
 
-， - ALPHA 2023 / 10 / 16
+ALPHA 2023 / 10 / 16
 
 - 将RedisUtil并行获取ZSet数据加入日程
 - 10 / 19 新增LeftPopList和RightPopList并且添加代理，暂未经过严格测试

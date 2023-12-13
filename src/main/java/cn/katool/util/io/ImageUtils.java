@@ -8,7 +8,7 @@
  * @Blog: https://www.wzl1.top/
  */
 
-package cn.katool.io;
+package cn.katool.util.io;
 
 
 import cn.hutool.core.img.ImgUtil;

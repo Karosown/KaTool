@@ -8,7 +8,7 @@
  * @Blog: https://www.wzl1.top/
  */
 
-package cn.katool.io;
+package cn.katool.util.io;
 
 import cn.katool.Exception.ErrorCode;
 import cn.katool.Exception.KaToolException;
