@@ -1,5 +1,6 @@
 package cn.katool.config.util;
 
+import cn.katool.config.cache.CacheConfig;
 import cn.katool.util.lock.LockUtil;
 import cn.katool.util.cache.policy.CachePolicy;
 import cn.katool.util.cache.policy.impl.CaffeineCachePolicy;
@@ -24,7 +25,7 @@ import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Configuration("RedisUtilConfig")
-@ConfigurationProperties("katool.util.redis")
+@ConfigurationProperties("katool.redis")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -32,41 +33,23 @@ import java.util.concurrent.TimeUnit;
 @Scope("singleton")            //  开启单例模式
 public class RedisUtilConfig {
 
+    @Resource
+    CacheConfig cacheConfig;
 
-    Long expTime = 5*60*1000L;
-    TimeUnit  timeUnit = TimeUnit.MILLISECONDS;
+    private String policy="default";    // 不写采用默认策略，默认情况下缓存Cache使用的策略
 
-    /**
-     * 策略
-     */
-    String policy="default";
-    @Bean("katool-redisutil-cache")
-    @DependsOn({"KaTool-Init"})
-    @ConditionalOnMissingBean({Cache.class})
-    public Cache<String, Object> Cache() {
-        Cache<String, Object> build=null;
-        switch (policy){
-            default:    // 默认使用Caffeine
-                log.info("【Bean工厂】katool-redisutil-cache=>使用默认Bean策略 使用Caffeine缓存，continue;");
-            case "caffeine":
-               build = Caffeine.newBuilder()
-                        .expireAfterAccess(expTime, timeUnit)
-                        .maximumSize(1000)
-                        .build();
-                log.info("【Bean工厂】katool-redisutil-cache=>使用Caffeine缓存策略 使用Caffeine缓存 建立Cache：{}",build);
-                break;
-        }
-        return build;
-    }
-
+    // 采用的缓存策略
     @Bean("katool-redisutil-cachepolicy")
     @DependsOn({"KaTool-Init"})
     @ConditionalOnMissingBean({CachePolicy.class})
     public CachePolicy cachePolicy() {
-        // 选择caffeine作为内存策略
+        if ("default".equals(policy)){
+            policy = cacheConfig.getPolicy();
+        }
         switch (policy) {
             case "caffeine":
                 log.info("【Bean工厂】katool-redisutil-cachepolicy=>使用Caffeine缓存策略");
+                // 这里面的CaffeineUtil会进行自动装配
                 return new CaffeineCachePolicy();
             default:
                 log.info("【Bean工厂】katool-redisutil-cachepolicy=>使用默认策略，直接走redis");
@@ -74,21 +57,7 @@ public class RedisUtilConfig {
         }
     }
 
-    @Bean(name = "CaffeineUtils")
-    @DependsOn({"KaTool-Init"})
-    @ConditionalOnMissingBean({CaffeineUtils.class})
-    public CaffeineUtils getInstance(@NotNull Cache<String,Object> cache){
-        log.info("【Bean工厂】CaffeineUtils => 初始化 CaffeineUtils 实例 {}",cache);
-        if (!cache.getClass().getName().equals("com.github.benmanes.caffeine.cache.BoundedLocalCache$BoundedLocalManualCache")){
-            log.info("【Bean工厂】CaffeineUtils => cache实例不符，修改当前 CaffeineUtils 实例 {}",cache);
-            cache=Caffeine.newBuilder()
-                    .expireAfterAccess(expTime, TimeUnit.MILLISECONDS)
-                    .maximumSize(1000)
-                    .build();
-            log.info("【Bean工厂】CaffeineUtils => cache实例不符，修改为 CaffeineUtils 实例 {}",cache);
-        }
-        return new CaffeineUtils<>(cache);
-    }
+
 
     @Resource
     RedisTemplate redisTemplate;
@@ -104,15 +73,5 @@ public class RedisUtilConfig {
         return LockUtil.getInstance();
     }
 
-    @Bean("KaTool-Init")
-    void katoolConfig(){
-        System.out.println(" ___  __    ________  _________  ________  ________  ___\n" +
-                "|\\  \\|\\  \\ |\\   __  \\|\\___   ___\\\\   __  \\|\\   __  \\|\\  \\\n" +
-                "\\ \\  \\/  /|\\ \\  \\|\\  \\|___ \\  \\_\\ \\  \\|\\  \\ \\  \\|\\  \\ \\  \\\n" +
-                " \\ \\   ___  \\ \\   __  \\   \\ \\  \\ \\ \\  \\\\\\  \\ \\  \\\\\\  \\ \\  \\\n" +
-                "  \\ \\  \\\\ \\  \\ \\  \\ \\  \\   \\ \\  \\ \\ \\  \\\\\\  \\ \\  \\\\\\  \\ \\  \\____\n" +
-                "   \\ \\__\\\\ \\__\\ \\__\\ \\__\\   \\ \\__\\ \\ \\_______\\ \\_______\\ \\_______\\\n" +
-                "    \\|__| \\|__|\\|__|\\|__|    \\|__|  \\|_______|\\|_______|\\|_______|\n" +
-                "                                                          1.9.5.GAMA");
-    }
+
 }

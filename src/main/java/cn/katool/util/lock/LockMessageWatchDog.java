@@ -38,12 +38,12 @@ public class LockMessageWatchDog implements MessageListener {
             threadWaitQueue.remove(lockName);
             return ;
         }
+            // 从线程等待队列中获取第一个线程
             Thread peek = threads.peek();
             log.debug("唤醒线程={}",peek.getName());
             if (peek.isInterrupted()) {
                 LockSupport.unpark(peek);   // 竞争到后会自行删除
             }
-
     }
 
     //表示监听一个频道

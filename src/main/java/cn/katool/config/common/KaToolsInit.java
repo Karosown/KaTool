@@ -1,7 +1,9 @@
 package cn.katool.config.common;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
 
+@Component
 public class KaToolsInit {
     @Bean("KaTool-Init")
     void katoolConfig(){
