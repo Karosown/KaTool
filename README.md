@@ -8,6 +8,8 @@ KaTool - 一款拥有七牛云文件处理、IP工具、IO工具、图形验证�
 
 **Tips：该Starter为个人项目使用，Starter制作仅满足于个人目前的开发需求，也只是个人开发，目前还在孵化阶段，工具类和其他同类作品相比不全面望谅解，在图片写入OutputStream时，使用到了Hutool**
 
+> 官方文档：http://katool.cn/ ()
+
 ## 快速入门
 
 ### Maven中央仓库引入
@@ -44,10 +46,33 @@ git clone https://github.com/Karosown/KaTool.git
 
 使用分布式锁前请开启Redistemplate的事务支持
 
+### V1.9.5 GAMA之前
+
 ```yaml
 katool:
-   七牛云配置 所有值都必须存在,没有的话留空,不能缺
+	#对象储存
       qiniu:
+        accessKey: #你的七牛云accessKey
+        secretKey: #你的七牛云secretKey
+        bucket:  #空间名称
+        zone:  #存储区域
+        domain:  #访问域名
+        basedir:  #文件存储根目录
+    lock:
+        internalLockLeaseTime: 30    #分布式锁默认租约时间，建议别设太小，不然和没有设置毫无区别
+        timeUnit: seconds            #租约时间单位
+    util:
+        redis:
+            policy: "caffeine"       #选择内存缓存策略，caffeine
+            exp-time: {5*60*1000}               #LFU过期时间
+            time-unit: milliseconds   #过期时间单位
+```
+
+### V1.9.5 GAMA及之后
+
+```yaml
+katool:
+     qiniu:
         accessKey: #你的七牛云accessKey
         secretKey: #你的七牛云secretKey
          对象储存
@@ -55,14 +80,19 @@ katool:
         zone:  存储区域
         domain:  访问域名
         basedir:  文件存储根目录
-    lock:
-        internalLockLeaseTime: 30    分布式锁默认租约时间，建议别设太小，不然和没有设置毫无区别
-        timeUnit: seconds            租约时间单位
-    util:
-        redis:
-            policy: "caffeine"       选择内存缓存策略，caffeine
-            exptime: {5*60*1000}               LFU过期时间
-            time-unit: milliseconds   过期时间单位
+    auth:
+        salt-key: "katooltest"   # JWT加密盐值，默认值为katool.salt.version::Katool版本号
+        exp-time: { 7*24*60*60*1000 }   # JWT过期时间，默认值为7天
+        token-header: "Authorization"   # 请求头中存放token的Header，默认值为"Authorization"
+    cache:
+        policy: "caffeine"      # 选择内存缓存策略，caffeine
+        exp-time: { 5*60*1000 }           # LFU过期时间
+        time-unit: milliseconds #  过期时间单位
+    redis:
+        policy: "default"       # 多级缓存策略模式选定，默认情况下和cache采用同一个策略，我cache使用的是啥，那么redis采用的策略就是啥
+        lock:
+            internalLockLeaseTime: 30   # 分布式锁默认租约时间
+            timeUnit: seconds           # 租约时间单位
 ```
 
 ## Nginx配置
@@ -109,54 +139,107 @@ public class RedisUtilConfig {
 
 如果使用默认策略（不采取缓存）直接`return new DefaultCachePolicy();`即可，KaTool自动装配了Caffeine的Cache，所以可以直接对CaffeineUtil进行使用
 
+## 贡献提交规范
+
+先将代码fork到自己的仓库，新建一个分支，代码编写好之后，请自行测试并配上测试截图到根目录下的`test.md`文件
+
+test.md格式：
+
+```markdown
+# 新增/修复 贡献名称
+# 你的个人简介（如果进入被参考，那么我们会将您计入到官网的贡献者中）
+- 头像：
+- Name：
+- 简介/签名：
+- 其他（包括但不限于邮箱/联系方式/博客/github/gitee）：
+# 简介：
+.....
+# 测试结果：
+.....
+# 使用教程：
+.....
+```
+
+KaTool-SpringBootTest测试框架github地址：https://github.com/Karosown/KaToolTest.git
+
+## Issues提交规范
+
+### 什么是Git提交规范
+
+Git是目前最流行的分布式版本控制系统，它能够帮助开发者高效管理项目代码。在进行Git操作时，我们需要对代码进行提交，以记录下每一次修改的内容。而Git提交规范则是指在代码提交时，根据一定的格式要求进行提交信息的书写，并在注释中尽可能详细地记录修改的内容，以方便其他人查看。
+
+### Git提交规范的重要性
+
+1. 提高协作效率：当多人协同开发时，不规范的提交信息很容易让别人无法理解代码的变更，从而延误项目进度。
+2. 方便代码审查：优秀的提交注释能够帮助代码审核人员快速了解修改的内容，减轻审核负担。
+3. 方便代码回退：在需要回退代码到某一个具体版本时，合理规范的Git提交信息能够方便地找到对应的版本，并快速恢复代码。
+4. 维护项目历史记录：清晰明了的提交注释可以记录项目开发的历程，方便后期的维护和追溯。
+
+### Git提交规范的要求
+
+Git提交规范通常包括以下信息：
+
+1. 标题（必填）：一句话简述本次提交的内容。
+2. 空行：用于分隔标题和正文。
+3. 正文（选填）：详细阐述本次提交的内容，可以包括具体修改的文件、代码功能、修复了哪些bug等。
+4. 空行：用于分隔正文和注释。
+5. 注释（选填）：对本次提交补充说明的信息，可以包括相关链接、参考文献等。
+
 ## Update
 
 v1.9.5
 
-GAMA 2023 / 12 /13	（待测试）
+- GAMA 2023 / 12 /13	（待测试）
 
-- 新增阿里云OSS对象存储、腾讯云OSS对象存储issuse（有意向的可以参与开发，实现指定接口即可，参考七牛云开发）
+  - 新增阿里云OSS对象存储、腾讯云OSS对象存储issuse（有意向的可以参与开发，实现指定接口即可，参考七牛云开发）
 
-- 对七牛云文件存储进行包迁移，架构有一点变化，如果介意的不要更新
+  - 对七牛云文件存储进行包迁移，架构有一点变化，如果介意的不要更新
 
-- OSS存储配置格式统一化
+  - OSS存储配置格式统一化
 
-  ```yaml
-  katool:
-  	store:
-  		qiniu:
-  			****
-  		aliyun:
-  			****
-          tencent:
-          	****
-  ```
+    ```yaml
+    katool:
+    	store:
+    		qiniu:
+    			****
+    		aliyun:
+    			****
+    		tencent:
+    		  	****
+    ```
 
-- 删除MethodIntefaceUtil，因为这个很鸡肋，而且JDK已经有了Function等接口
+  - 新增IDCardValidUtils工具类，支持15位身份证和18位身份证互转以及身份证合法性校验
 
-- 新增IDCardValidUtils工具类，支持15位身份证和18位身份证互转以及身份证合法性校验
+  - 更新IPUtils，新增IP合法性校验
 
-- 更新IPUtils，新增IP合法性校验
+  - 新增AuthUtil，支持JWT和类格式快速转换
 
-- 优化其他工具类架构
+  - 删除MethodIntefaceUtil，因为这个很鸡肋，而且JDK已经有了Function等接口
 
-BETA 2023 / 11 / 27
+  - 优化其他工具类架构
 
-- 新增`SpringContextUtils`来对SpringBean进行注册、判断、卸载
-- 新增`ClassUtil`来对类进行加载、类初始化，默认采用当前线程的类加载器为父类加载器
+- BETA 2023 / 11 / 27
+  - 新增`SpringContextUtils`来对SpringBean进行注册、判断、卸载
+  - 新增`ClassUtil`来对类进行加载、类初始化，默认采用当前线程的类加载器为父类加载器（）
 
-- 新增`KaToolClassLoader`,可以自定义父类加载器，用于加载外部class文件（~~为什么这样做，不用UrlLoader，主要是之前项目写一个任务模块，需要从外部导入，但是使用UrlLoader来导入本地class文件没有用，所以我选择使用以字节加载进JVM，再生成对象~~）
+  - 新增`KaToolClassLoader`,可以自定义父类加载器，用于加载外部class文件（~~为什么这样做，不用UrlLoader，主要是之前项目写一个任务模块，需要从外部导入，但是使用UrlLoader来导入本地class文件没有用，所以我选择使用以字节加载进JVM，再生成对象~~）
 
-ALPHA 2023 / 10 / 16
+- ALPHA 2023 / 10 / 16
+  - 将RedisUtil并行获取ZSet数据加入日程
+  - 10 / 19 新增LeftPopList和RightPopList并且添加代理，暂未经过严格测试
 
-- 将RedisUtil并行获取ZSet数据加入日程
-- 10 / 19 新增LeftPopList和RightPopList并且添加代理，暂未经过严格测试
 
-v1.9.4 - Release 2023 / 09 / 24
+v1.9.4
 
-- 添加@ConditionalOnMissingBean注解，用户自定义配置不需要使用@Primary注解
-- 解决内存取得null，不名字Redis的问题
-  v1.9.3 2023 / 09 /18
+- Release 2023 / 09 / 24
+
+  - 添加@ConditionalOnMissingBean注解，用户自定义配置不需要使用@Primary注解
+
+  - 解决内存取得null，不名字Redis的问题
+
+
+v1.9.3 2023 / 09 /18
+
 - 修改RedisUtil中Zset为ZSet，更符合命名标准
 
 v1.9.2 2023 / 09 / 18
