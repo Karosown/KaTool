@@ -20,7 +20,7 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties("katool.auth")
 public class AuthConfig extends AuthUtil {
     private long EXPIRE_TIME = 3600 * 24 * 7;
-    private String SALT_KEY =  "katool.salt.version::"+ KaToolInit.version;
+    private String SALT_KEY =  "katool.salt.version::" + KaToolInit.version;
 
     @Bean
     public void initAuthUtils(){
