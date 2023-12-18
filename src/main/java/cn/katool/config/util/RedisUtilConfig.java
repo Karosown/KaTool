@@ -5,10 +5,7 @@ import cn.katool.util.lock.LockUtil;
 import cn.katool.util.cache.policy.CachePolicy;
 import cn.katool.util.cache.policy.impl.CaffeineCachePolicy;
 import cn.katool.util.cache.policy.impl.DefaultCachePolicy;
-import cn.katool.util.cache.utils.CaffeineUtils;
-import cn.katool.util.db.nosql.RedisUtils;
-import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
+import cn.katool.util.database.nosql.RedisUtils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,8 +16,6 @@ import org.springframework.context.annotation.*;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import javax.annotation.Resource;
-import javax.validation.constraints.NotNull;
-import java.util.concurrent.TimeUnit;
 
 
 @Slf4j

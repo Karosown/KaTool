@@ -1,4 +1,4 @@
-package cn.katool.util.db.nosql.interceptor;
+package cn.katool.util.database.nosql.interceptor;
 
 
 import cn.katool.util.cache.policy.CachePolicy;
@@ -37,7 +37,7 @@ public class RedisUtilsInterceptor {
         return true;
     }
 
-    @Around("execution(* cn.katool.util.db.nosql.RedisUtils.get*(*))||execution(* cn.katool.util.db.nosql.RedisUtils.get*(*,*))")
+    @Around("execution(* cn.katool.util.database.nosql.RedisUtils.get*(*))||execution(* cn.katool.util.database.nosql.RedisUtils.get*(*,*))")
     public Object aroundByGet(ProceedingJoinPoint joinPoint) throws Throwable {
         List<Object> args = Arrays.asList(joinPoint.getArgs());
 
@@ -55,7 +55,7 @@ public class RedisUtilsInterceptor {
         return value;
     }
 
-    @Around("execution(* cn.katool.util.db.nosql.RedisUtils.leftPopList(*,*))")
+    @Around("execution(* cn.katool.util.database.nosql.RedisUtils.leftPopList(*,*))")
     public Object aroundByLeftPopGet(ProceedingJoinPoint joinPoint) throws Throwable {
         List<Object> args = Arrays.asList(joinPoint.getArgs());
 
@@ -76,7 +76,7 @@ public class RedisUtilsInterceptor {
         log.info("RedisUtil-AOP => key:{} || value：{}", key,value);
         return value;
     }
-    @Around("execution(* cn.katool.util.db.nosql.RedisUtils.rightPopList(*,*))")
+    @Around("execution(* cn.katool.util.database.nosql.RedisUtils.rightPopList(*,*))")
     public Object aroundByRightPopGet(ProceedingJoinPoint joinPoint) throws Throwable {
         List<Object> args = Arrays.asList(joinPoint.getArgs());
 
@@ -98,7 +98,7 @@ public class RedisUtilsInterceptor {
         return value;
     }
 
-    @Around("execution(* cn.katool.util.db.nosql.RedisUtils.getZSetByRange(..))")
+    @Around("execution(* cn.katool.util.database.nosql.RedisUtils.getZSetByRange(..))")
     public Object aroundByGetByRange(ProceedingJoinPoint joinPoint) throws Throwable {
         List<Object> args = Arrays.asList(joinPoint.getArgs());
 
@@ -123,7 +123,7 @@ public class RedisUtilsInterceptor {
         return objects;
     }
 
-    @Around("execution(* cn.katool.util.db.nosql.RedisUtils.remove(..))")
+    @Around("execution(* cn.katool.util.database.nosql.RedisUtils.remove(..))")
     public Object aroundByRemove(ProceedingJoinPoint joinPoint) throws Throwable {
         // 如果不采取内存缓存策略，那么直接走Redis
         if (casePolicy()){
@@ -144,9 +144,9 @@ public class RedisUtilsInterceptor {
         return proceed;
     }
 
-    @Around("execution(* cn.katool.util.db.nosql.RedisUtils.set*(..)) ||" +
-            " execution(* cn.katool.util.db.nosql.RedisUtils.put*(*,*)) ||" +
-            " execution(* cn.katool.util.db.nosql.RedisUtils.push*(*,*))")
+    @Around("execution(* cn.katool.util.database.nosql.RedisUtils.set*(..)) ||" +
+            " execution(* cn.katool.util.database.nosql.RedisUtils.put*(*,*)) ||" +
+            " execution(* cn.katool.util.database.nosql.RedisUtils.push*(*,*))")
     public Object aroundBySetOrPut(ProceedingJoinPoint joinPoint) throws Throwable {
 
         if (casePolicy()){
@@ -158,7 +158,7 @@ public class RedisUtilsInterceptor {
         return aroundBySETResponse(joinPoint);
     }
 
-    @Around("execution(* cn.katool.util.db.nosql.RedisUtils.push*(*,*,*))")
+    @Around("execution(* cn.katool.util.database.nosql.RedisUtils.push*(*,*,*))")
     public Object aroundByPush(ProceedingJoinPoint joinPoint) throws Throwable {
         if (casePolicy()){
             List<Object> args = Arrays.asList(joinPoint.getArgs());
@@ -179,7 +179,7 @@ public class RedisUtilsInterceptor {
         return aroundBySETResponse(joinPoint);
     }
 
-    @Around("execution(* cn.katool.util.db.nosql.RedisUtils.putZSet(*,*,Double))")
+    @Around("execution(* cn.katool.util.database.nosql.RedisUtils.putZSet(*,*,Double))")
     public Object aroundByPutZsetByScore(ProceedingJoinPoint joinPoint) throws Throwable {
         if (casePolicy()){
             List<Object> args = Arrays.asList(joinPoint.getArgs());
@@ -219,7 +219,7 @@ public class RedisUtilsInterceptor {
         return aroundBySETResponse(joinPoint);
     }
 
-    @Around("execution(* cn.katool.util.db.nosql.RedisUtils.putZSet(*,*))")
+    @Around("execution(* cn.katool.util.database.nosql.RedisUtils.putZSet(*,*))")
     public Object aroundByPutZSet(ProceedingJoinPoint joinPoint) throws Throwable {
         if (casePolicy()){
             List<Object> args = Arrays.asList(joinPoint.getArgs());

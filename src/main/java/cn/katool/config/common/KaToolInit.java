@@ -4,7 +4,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 @Component
-public class KaToolsInit {
+public class KaToolInit {
+
+    public static String version = "1.9.5.GAMA";
     @Bean("KaTool-Init")
     void katoolConfig(){
         System.out.println(" ___  __    ________  _________  ________  ________  ___\n" +
@@ -14,6 +16,6 @@ public class KaToolsInit {
                 "  \\ \\  \\\\ \\  \\ \\  \\ \\  \\   \\ \\  \\ \\ \\  \\\\\\  \\ \\  \\\\\\  \\ \\  \\____\n" +
                 "   \\ \\__\\\\ \\__\\ \\__\\ \\__\\   \\ \\__\\ \\ \\_______\\ \\_______\\ \\_______\\\n" +
                 "    \\|__| \\|__|\\|__|\\|__|    \\|__|  \\|_______|\\|_______|\\|_______|\n" +
-                "                                                          1.9.5.GAMA");
+                "                                                          version:"+version);
     }
 }

@@ -8,7 +8,7 @@
  * @Blog: https://www.wzl1.top/
  */
 
-package cn.katool.util.db.nosql;
+package cn.katool.util.database.nosql;
 
 
 import cn.hutool.core.util.ObjectUtil;
