@@ -7,20 +7,40 @@ import cn.hutool.jwt.JWTUtil;
 
 import cn.katool.constant.AuthConstant;
 import io.netty.util.internal.StringUtil;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.ObjectUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
+@Data
 public class AuthUtil {
 
-    protected static long EXPIRE_TIME;
-    protected static String SALT_KEY;
+    static long EXPIRE_TIME;
+    static String SALT_KEY;
+
+    public static long getExpireTime() {
+        return EXPIRE_TIME;
+    }
+
+    public static void setExpireTime(long expireTime) {
+        EXPIRE_TIME = expireTime;
+    }
+
+    public static String getSaltKey() {
+        return SALT_KEY;
+    }
+
+    public static void setSaltKey(String saltKey) {
+        SALT_KEY = saltKey;
+    }
+
     public static String getToken(HttpServletRequest request){
         if (ObjectUtils.isEmpty(request)){
             throw new RuntimeException("request is null");
@@ -52,6 +72,7 @@ public class AuthUtil {
         } catch (InstantiationException e) {
             throw new RuntimeException(e);
         } catch (IllegalAccessException e) {
+            e.addSuppressed(new Exception("[KaTool-Excepton Warning] 请检查user是否为内部类，如果是，可以尝试改为静态内部类或者变为外部类来解决。"));
             throw new RuntimeException(e);
         }
         log.info("token.header payload end and generate Token begin:{},{},{},{}",header,payload,SALT_KEY,user);
