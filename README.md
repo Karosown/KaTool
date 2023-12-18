@@ -50,49 +50,47 @@ git clone https://github.com/Karosown/KaTool.git
 
 ```yaml
 katool:
-  #对象储存
-  qiniu:
-    accessKey: #你的七牛云accessKey
-    secretKey: #你的七牛云secretKey
-    bucket:  #空间名称
-    zone:  #存储区域
-    domain:  #访问域名
-    basedir:  #文件存储根目录
-  lock:
-    internalLockLeaseTime: 30    #分布式锁默认租约时间，建议别设太小，不然和没有设置毫无区别
-    timeUnit: seconds            #租约时间单位
-  util:
-    redis:
-      policy: "caffeine"       #选择内存缓存策略，caffeine
-      exp-time: {5*60*1000}               #LFU过期时间
-      time-unit: milliseconds   #过期时间单位
+    qiniu:
+        accessKey: 						# 你的七牛云accessKey
+        secretKey: 						# 你的七牛云secretKey
+        bucket:  						# 空间名称
+        zone:  							# 存储区域
+        domain:  						# 访问域名
+        basedir:  						# 文件存储根目录
+    lock:
+        internalLockLeaseTime: 30    	# 分布式锁默认租约时间，建议别设太小，不然和没有设置毫无区别
+        timeUnit: seconds            	# 租约时间单位
+    util:
+        redis:
+            policy: "caffeine"       	# 选择内存缓存策略，caffeine
+            exp-time: {5*60*1000}       # LFU过期时间
+            time-unit: milliseconds   	# 过期时间单位
 ```
 
 ### V1.9.5 GAMA及之后
 
 ```yaml
 katool:
-  qiniu:
-    accessKey: #你的七牛云accessKey
-    secretKey: #你的七牛云secretKey
-      对象储存
-    bucket:  空间名称
-    zone:  存储区域
-    domain:  访问域名
-    basedir:  文件存储根目录
-  auth:
-    salt-key: "katooltest"   # JWT加密盐值，默认值为katool.salt.version::Katool版本号
-    exp-time: { 7*24*60*60*1000 }   # JWT过期时间，默认值为7天
-    token-header: "Authorization"   # 请求头中存放token的Header，默认值为"Authorization"
-  cache:
-    policy: "caffeine"      # 选择内存缓存策略，caffeine
-    exp-time: { 5*60*1000 }           # LFU过期时间
-    time-unit: milliseconds #  过期时间单位
-  redis:
-    policy: "default"       # 多级缓存策略模式选定，默认情况下和cache采用同一个策略，我cache使用的是啥，那么redis采用的策略就是啥
-    lock:
-      internalLockLeaseTime: 30   # 分布式锁默认租约时间
-      timeUnit: seconds           # 租约时间单位
+     qiniu:
+        accessKey: 						# 你的七牛云accessKey
+        secretKey: 						# 你的七牛云secretKey
+        bucket:  						# 空间名称
+        zone:  							# 存储区域
+        domain:  						# 访问域名
+        basedir:  						# 文件存储根目录
+    auth:
+        salt-key: "katooltest"   		# JWT加密盐值，默认值为katool.salt.version::Katool版本号
+        exp-time: { 7*24*60*60*1000 }   # JWT过期时间，默认值为7天
+        token-header: "Authorization"   # 请求头中存放token的Header，默认值为"Authorization"
+    cache:
+        policy: "caffeine"      		# 选择内存缓存策略，caffeine
+        exp-time: { 5*60*1000 }         # LFU过期时间
+        time-unit: milliseconds 		# 过期时间单位
+    redis:
+        policy: "default"       		# 多级缓存策略模式选定，默认情况下和cache采用同一个策略，我cache使用的是啥，那么redis采用的策略就是啥
+        lock:
+            internalLockLeaseTime: 30   # 分布式锁默认租约时间
+            timeUnit: seconds           # 租约时间单位
 ```
 
 ## Nginx配置
@@ -123,15 +121,15 @@ import org.springframework.context.annotation.Primary;
 @Configuration
 public class RedisUtilConfig {
 
+    
 
+    @Bean
+    @DependsOn({"KaTool-Init"})
+    @Primary
+    public CachePolicy cachePolicy() {
 
-  @Bean
-  @DependsOn({"KaTool-Init"})
-  @Primary
-  public CachePolicy cachePolicy() {
-
-    return null;
-  }
+        return null;
+    }
 
 
 }
