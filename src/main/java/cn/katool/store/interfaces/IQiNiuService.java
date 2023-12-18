@@ -7,6 +7,6 @@ import com.qiniu.common.QiniuException;
 import java.io.File;
 import java.io.InputStream;
 
-public interface IQiniuService extends StoreService {
+public interface IQiNiuService extends StoreService {
 
 }

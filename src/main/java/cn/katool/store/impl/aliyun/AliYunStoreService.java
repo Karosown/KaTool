@@ -1,13 +1,13 @@
 package cn.katool.store.impl.aliyun;
 
 import cn.katool.Exception.KaToolException;
-import cn.katool.store.interfaces.IAliyunStoreService;
+import cn.katool.store.interfaces.IAliYunStoreService;
 import com.qiniu.common.QiniuException;
 
 import java.io.File;
 import java.io.InputStream;
 
-public class AliyunStoreService implements IAliyunStoreService {
+public class AliYunStoreService implements IAliYunStoreService {
     @Override
     public String getOriginName(String URL) {
         return null;

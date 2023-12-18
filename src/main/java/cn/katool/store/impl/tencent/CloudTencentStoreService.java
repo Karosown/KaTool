@@ -7,7 +7,7 @@ import com.qiniu.common.QiniuException;
 import java.io.File;
 import java.io.InputStream;
 
-public class CloudencentStoreService implements ICloudTencentStoreService {
+public class CloudTencentStoreService implements ICloudTencentStoreService {
     @Override
     public String getOriginName(String URL) {
         return null;
