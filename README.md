@@ -8,7 +8,7 @@ KaTool - 一款拥有七牛云文件处理、IP工具、IO工具、图形验证�
 
 **Tips：该Starter为个人项目使用，Starter制作仅满足于个人目前的开发需求，也只是个人开发，目前还在孵化阶段，工具类和其他同类作品相比不全面望谅解，在图片写入OutputStream时，使用到了Hutool**
 
-> 官方文档：http://katool.cn/ ()
+> 官方文档：http://katool.cn/ (如果还在备案，请访问http://katool.wzl.fyi/)
 
 ## 快速入门
 
@@ -21,10 +21,10 @@ KaTool - 一款拥有七牛云文件处理、IP工具、IO工具、图形验证�
 ```xml
 <!-- https://mvnrepository.com/artifact/cn.katool/KaTool -->
 <dependency>
-  <groupId>cn.katool</groupId>
-  <artifactId>KaTool</artifactId>
-  <*version>{{KaTool.version}}</version>
-        </dependency>
+    <groupId>cn.katool</groupId>
+    <artifactId>KaTool</artifactId>
+    <*version>{{KaTool.version}}</version>
+</dependency>
 ```
 
 

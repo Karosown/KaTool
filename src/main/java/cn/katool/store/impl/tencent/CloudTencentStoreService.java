@@ -3,10 +3,15 @@ package cn.katool.store.impl.tencent;
 import cn.katool.Exception.KaToolException;
 import cn.katool.store.interfaces.ICloudTencentStoreService;
 import com.qiniu.common.QiniuException;
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.InputStream;
-
+@Data
+@Service("Store-Tencent")
+@Slf4j
 public class CloudTencentStoreService implements ICloudTencentStoreService {
     @Override
     public String getOriginName(String URL) {

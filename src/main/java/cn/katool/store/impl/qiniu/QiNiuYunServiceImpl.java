@@ -11,7 +11,7 @@
 package cn.katool.store.impl.qiniu;
 import cn.katool.Exception.KaToolException;
 import cn.katool.util.io.FileUtils;
-import cn.katool.store.interfaces.IQiNiuService;
+import cn.katool.store.interfaces.IQiNiuYunService;
 import com.qiniu.common.QiniuException;
 import com.qiniu.http.Response;
 import com.qiniu.storage.BucketManager;
@@ -29,9 +29,9 @@ import java.io.File;
 import java.io.InputStream;
 
 @Data
-@Service("Store-Qiniu")
+@Service("Store-QiNiuYun")
 @Slf4j
-public class QiNiuServiceImpl implements IQiNiuService, InitializingBean {
+public class QiNiuYunServiceImpl implements IQiNiuYunService, InitializingBean {
 
     @Autowired
     private UploadManager uploadManager;
