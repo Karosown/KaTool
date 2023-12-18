@@ -21,10 +21,10 @@ KaTool - 一款拥有七牛云文件处理、IP工具、IO工具、图形验证�
 ```xml
 <!-- https://mvnrepository.com/artifact/cn.katool/KaTool -->
 <dependency>
-    <groupId>cn.katool</groupId>
-    <artifactId>KaTool</artifactId>
-    <*version>{{KaTool.version}}</version>
-</dependency>
+  <groupId>cn.katool</groupId>
+  <artifactId>KaTool</artifactId>
+  <*version>{{KaTool.version}}</version>
+        </dependency>
 ```
 
 
@@ -36,9 +36,7 @@ KaTool - 一款拥有七牛云文件处理、IP工具、IO工具、图形验证�
 ```shell
 git clone https://github.com/Karosown/KaTool.git
 ```
-
 #### 打开项目
-
 选择Maven install
 ![image-20231123141406759](http://gd.7n.cdn.wzl1.top/typora/img/image-20231123141406759.png)
 
@@ -66,12 +64,11 @@ katool:
             exp-time: {5*60*1000}       # LFU过期时间
             time-unit: milliseconds   	# 过期时间单位
 ```
-
 ### V1.9.5 GAMA及之后
 
 ```yaml
 katool:
-     qiniu:
+    qiniu:
         accessKey: 						# 你的七牛云accessKey
         secretKey: 						# 你的七牛云secretKey
         bucket:  						# 空间名称
@@ -96,13 +93,11 @@ katool:
 ## Nginx配置
 
 Nginx反向代理后获取真实来源IP
-
 ```Nginx.config-server
 proxy_set_header   X-Real-IP        $remote_addr;
 proxy_set_header   X-Real-Port      $remote_port;
 proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
 ```
-
 ## RedisUtilConfig
 
 如何自定义Redis多层缓存策略
@@ -212,7 +207,6 @@ Git提交规范要求的格式通常如下：
 表示本次提交的详细描述，可以包括多行。表示本次提交的注释，可以包括多行。 ## Git提交规范的代码示例 下面是一个示例代码，演示了如何按照Git提交规范进行代码提交： ```javascript git add . git commit -m "feat(login): 新增用户登录功能 新增了用户登录页面、登录表单提交接口及相关验证逻辑" ``` 在这个示例中，我们按照Git提交规范的格式书写了一条提交信息，其中为feat，表示本次提交新增了功能；为login，表示本次提交涉及到用户登录模块；为“新增用户登录功能”，简要说明了本次提交的内容；为“新增了用户登录页面、登录表单提交接口及相关验证逻辑”，详细描述了本次提交的内容。
 
 ## Update
-
 v1.9.5
 
 - GAMA 2023 / 12 /13	（待测试）
@@ -245,14 +239,12 @@ v1.9.5
   - 优化其他工具类架构
 
 - BETA 2023 / 11 / 27
-
   - 新增`SpringContextUtils`来对SpringBean进行注册、判断、卸载
   - 新增`ClassUtil`来对类进行加载、类初始化，默认采用当前线程的类加载器为父类加载器（）
 
   - 新增`KaToolClassLoader`,可以自定义父类加载器，用于加载外部class文件（~~为什么这样做，不用UrlLoader，主要是之前项目写一个任务模块，需要从外部导入，但是使用UrlLoader来导入本地class文件没有用，所以我选择使用以字节加载进JVM，再生成对象~~）
 
 - ALPHA 2023 / 10 / 16
-
   - 将RedisUtil并行获取ZSet数据加入日程
   - 10 / 19 新增LeftPopList和RightPopList并且添加代理，暂未经过严格测试
 
@@ -357,7 +349,6 @@ proxy_set_header   X-Real-IP        $remote_addr;
 proxy_set_header   X-Real-Port      $remote_port;
 proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
 ```
-
 <br>
 v1.3.0<br>
 图形验证码生成<br>
