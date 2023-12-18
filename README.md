@@ -21,10 +21,10 @@ KaTool - 一款拥有七牛云文件处理、IP工具、IO工具、图形验证�
 ```xml
 <!-- https://mvnrepository.com/artifact/cn.katool/KaTool -->
 <dependency>
-    <groupId>cn.katool</groupId>
-    <artifactId>KaTool</artifactId>
-    <*version>{{KaTool.version}}</version>
-</dependency>
+  <groupId>cn.katool</groupId>
+  <artifactId>KaTool</artifactId>
+  <*version>{{KaTool.version}}</version>
+        </dependency>
 ```
 
 
@@ -50,49 +50,49 @@ git clone https://github.com/Karosown/KaTool.git
 
 ```yaml
 katool:
-	#对象储存
-      qiniu:
-        accessKey: #你的七牛云accessKey
-        secretKey: #你的七牛云secretKey
-        bucket:  #空间名称
-        zone:  #存储区域
-        domain:  #访问域名
-        basedir:  #文件存储根目录
-    lock:
-        internalLockLeaseTime: 30    #分布式锁默认租约时间，建议别设太小，不然和没有设置毫无区别
-        timeUnit: seconds            #租约时间单位
-    util:
-        redis:
-            policy: "caffeine"       #选择内存缓存策略，caffeine
-            exp-time: {5*60*1000}               #LFU过期时间
-            time-unit: milliseconds   #过期时间单位
+  #对象储存
+  qiniu:
+    accessKey: #你的七牛云accessKey
+    secretKey: #你的七牛云secretKey
+    bucket:  #空间名称
+    zone:  #存储区域
+    domain:  #访问域名
+    basedir:  #文件存储根目录
+  lock:
+    internalLockLeaseTime: 30    #分布式锁默认租约时间，建议别设太小，不然和没有设置毫无区别
+    timeUnit: seconds            #租约时间单位
+  util:
+    redis:
+      policy: "caffeine"       #选择内存缓存策略，caffeine
+      exp-time: {5*60*1000}               #LFU过期时间
+      time-unit: milliseconds   #过期时间单位
 ```
 
 ### V1.9.5 GAMA及之后
 
 ```yaml
 katool:
-     qiniu:
-        accessKey: #你的七牛云accessKey
-        secretKey: #你的七牛云secretKey
-         对象储存
-        bucket:  空间名称
-        zone:  存储区域
-        domain:  访问域名
-        basedir:  文件存储根目录
-    auth:
-        salt-key: "katooltest"   # JWT加密盐值，默认值为katool.salt.version::Katool版本号
-        exp-time: { 7*24*60*60*1000 }   # JWT过期时间，默认值为7天
-        token-header: "Authorization"   # 请求头中存放token的Header，默认值为"Authorization"
-    cache:
-        policy: "caffeine"      # 选择内存缓存策略，caffeine
-        exp-time: { 5*60*1000 }           # LFU过期时间
-        time-unit: milliseconds #  过期时间单位
-    redis:
-        policy: "default"       # 多级缓存策略模式选定，默认情况下和cache采用同一个策略，我cache使用的是啥，那么redis采用的策略就是啥
-        lock:
-            internalLockLeaseTime: 30   # 分布式锁默认租约时间
-            timeUnit: seconds           # 租约时间单位
+  qiniu:
+    accessKey: #你的七牛云accessKey
+    secretKey: #你的七牛云secretKey
+      对象储存
+    bucket:  空间名称
+    zone:  存储区域
+    domain:  访问域名
+    basedir:  文件存储根目录
+  auth:
+    salt-key: "katooltest"   # JWT加密盐值，默认值为katool.salt.version::Katool版本号
+    exp-time: { 7*24*60*60*1000 }   # JWT过期时间，默认值为7天
+    token-header: "Authorization"   # 请求头中存放token的Header，默认值为"Authorization"
+  cache:
+    policy: "caffeine"      # 选择内存缓存策略，caffeine
+    exp-time: { 5*60*1000 }           # LFU过期时间
+    time-unit: milliseconds #  过期时间单位
+  redis:
+    policy: "default"       # 多级缓存策略模式选定，默认情况下和cache采用同一个策略，我cache使用的是啥，那么redis采用的策略就是啥
+    lock:
+      internalLockLeaseTime: 30   # 分布式锁默认租约时间
+      timeUnit: seconds           # 租约时间单位
 ```
 
 ## Nginx配置
@@ -123,15 +123,15 @@ import org.springframework.context.annotation.Primary;
 @Configuration
 public class RedisUtilConfig {
 
-    
 
-    @Bean
-    @DependsOn({"KaTool-Init"})
-    @Primary
-    public CachePolicy cachePolicy() {
 
-        return null;
-    }
+  @Bean
+  @DependsOn({"KaTool-Init"})
+  @Primary
+  public CachePolicy cachePolicy() {
+
+    return null;
+  }
 
 
 }
@@ -162,7 +162,7 @@ test.md格式：
 
 KaTool-SpringBootTest测试框架github地址：https://github.com/Karosown/KaToolTest.git
 
-## Issues提交规范
+## Git/Issues提交规范
 
 ### 什么是Git提交规范
 
@@ -184,6 +184,34 @@ Git提交规范通常包括以下信息：
 3. 正文（选填）：详细阐述本次提交的内容，可以包括具体修改的文件、代码功能、修复了哪些bug等。
 4. 空行：用于分隔正文和注释。
 5. 注释（选填）：对本次提交补充说明的信息，可以包括相关链接、参考文献等。
+
+Git提交规范要求的格式通常如下：
+
+```
+<type>(<scope>): <subject>
+
+<body>
+
+<footer>
+```
+
+其中，表示本次提交的类型，常见的有以下几种：
+
+- feat：新增功能
+- fix：修复bug
+- docs：修改文档
+- style：修改代码风格
+- refactor：重构代码
+- test：增加或修改测试代码
+- chore：修改构建过程或辅助工具
+
+表示本次提交涉及到的模块或功能点。如果本次提交不涉及到具体模块或功能点，可以省略。
+
+表示本次提交的简要说明，一般不超过50个字符。
+
+
+
+表示本次提交的详细描述，可以包括多行。表示本次提交的注释，可以包括多行。 ## Git提交规范的代码示例 下面是一个示例代码，演示了如何按照Git提交规范进行代码提交： ```javascript git add . git commit -m "feat(login): 新增用户登录功能 新增了用户登录页面、登录表单提交接口及相关验证逻辑" ``` 在这个示例中，我们按照Git提交规范的格式书写了一条提交信息，其中为feat，表示本次提交新增了功能；为login，表示本次提交涉及到用户登录模块；为“新增用户登录功能”，简要说明了本次提交的内容；为“新增了用户登录页面、登录表单提交接口及相关验证逻辑”，详细描述了本次提交的内容。
 
 ## Update
 
@@ -219,12 +247,14 @@ v1.9.5
   - 优化其他工具类架构
 
 - BETA 2023 / 11 / 27
+
   - 新增`SpringContextUtils`来对SpringBean进行注册、判断、卸载
   - 新增`ClassUtil`来对类进行加载、类初始化，默认采用当前线程的类加载器为父类加载器（）
 
   - 新增`KaToolClassLoader`,可以自定义父类加载器，用于加载外部class文件（~~为什么这样做，不用UrlLoader，主要是之前项目写一个任务模块，需要从外部导入，但是使用UrlLoader来导入本地class文件没有用，所以我选择使用以字节加载进JVM，再生成对象~~）
 
 - ALPHA 2023 / 10 / 16
+
   - 将RedisUtil并行获取ZSet数据加入日程
   - 10 / 19 新增LeftPopList和RightPopList并且添加代理，暂未经过严格测试
 
