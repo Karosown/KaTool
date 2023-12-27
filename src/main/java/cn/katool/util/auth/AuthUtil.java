@@ -14,13 +14,14 @@ import org.springframework.util.ObjectUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.ParameterizedType;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
 @Data
-public class AuthUtil {
+public class AuthUtil<T> {
 
     static long EXPIRE_TIME;
     static String SALT_KEY;
@@ -49,44 +50,73 @@ public class AuthUtil {
     }
     /**从
      * 生成Token
-     * @param user 用户信息
+     * @param payloadObj 用户信息
      * @return token
      */
-    public static String createToken(Object user,Class clazz) {
+    public static String createToken(Object payloadObj,Class clazz) {
         // 构建header
-        log.info("token.header create begin:{}",user);
+        log.info("token.header create begin:{}",payloadObj);
         Map<String, Object> header = new HashMap<>();
         header.put("alg", "HS256");
         header.put("typ", "JWT");
         long currentTimeMillis = System.currentTimeMillis();
         Date expireDate = new Date(currentTimeMillis + EXPIRE_TIME);
         header.put("expTime",expireDate.getTime());
-        log.info("token.header create end and payload begin:{}",user);
+        log.info("token.header create end and payload begin:{}",payloadObj);
         // 构建payload
         Map<String, Object> payload = new HashMap<>();
-        Object payloadUser = null;
+        Object payloadEntity = null;
         try {
-            payloadUser = clazz.newInstance();
-            BeanUtils.copyProperties(user,payloadUser);
-            payload.put("body", payloadUser);
+            payloadEntity = clazz.newInstance();
+            BeanUtils.copyProperties(payloadObj,payloadEntity);
+            payload.put("body", payloadEntity);
         } catch (InstantiationException e) {
             throw new RuntimeException(e);
         } catch (IllegalAccessException e) {
-            e.addSuppressed(new Exception("[KaTool-Excepton Warning] 请检查user是否为内部类，如果是，可以尝试改为静态内部类或者变为外部类来解决。"));
+            e.addSuppressed(new Exception("[KaTool-Excepton Warning] 请检查payloadObj是否为内部类，如果是，可以尝试改为静态内部类或者变为外部类来解决。"));
             throw new RuntimeException(e);
         }
-        log.info("token.header payload end and generate Token begin:{},{},{},{}",header,payload,SALT_KEY,user);
+        log.info("token.header payload end and generate Token begin:{},{},{},{}",header,payload,SALT_KEY,payloadObj);
         // 生成Token
         String token = JWTUtil.createToken(header, payload, SALT_KEY.getBytes());
 
-        log.info("User:[{}] 生成Token成功！\n" +
+        log.info("PayLoad:[{}] 生成Token成功！\n" +
                 "过期时间为：【{}】\n" +
                 "header：\n" +
                 "【{}】\n" +
                 "payload：\n" +
                 "【{}】\n" +
                 "Token为：\n" +
-                "【{}】", user,expireDate,header, payload,token);
+                "【{}】", payloadObj,expireDate,header, payload,token);
+
+        return token;
+    }
+
+    public static String createToken(Object payloadObj) {
+        // 构建header
+        log.info("token.header create begin:{}",payloadObj);
+        Map<String, Object> header = new HashMap<>();
+        header.put("alg", "HS256");
+        header.put("typ", "JWT");
+        long currentTimeMillis = System.currentTimeMillis();
+        Date expireDate = new Date(currentTimeMillis + EXPIRE_TIME);
+        header.put("expTime",expireDate.getTime());
+        log.info("token.header create end and payload begin:{}",payloadObj);
+        // 构建payload
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("body", payloadObj);
+        log.info("token.header payload end and generate Token begin:{},{},{},{}",header,payload,SALT_KEY,payloadObj);
+        // 生成Token
+        String token = JWTUtil.createToken(header, payload, SALT_KEY.getBytes());
+
+        log.info("PayLoad:[{}] 生成Token成功！\n" +
+                "过期时间为：【{}】\n" +
+                "header：\n" +
+                "【{}】\n" +
+                "payload：\n" +
+                "【{}】\n" +
+                "Token为：\n" +
+                "【{}】", payloadObj,expireDate,header, payload,token);
 
         return token;
     }
@@ -129,11 +159,11 @@ public class AuthUtil {
     }
 
     /**
-     * 解析Token返回User对象
+     * 解析Token返回PayLoad对象
      * @param token Token
-     * @return User对象
+     * @return PayLoad对象
      */
-    public static Object getUserFromToken(String token,Class clazz) {
+    public static Object getPayLoadFromToken(String token,Class clazz) {
         if (!verifyToken(token)){
             return null;
         }
@@ -145,4 +175,17 @@ public class AuthUtil {
         return body;
     }
 
+    public static <T> T getPayLoadFromToken(String token) {
+        if (!verifyToken(token)){
+            return null;
+        }
+        T body = JSONUtil.toBean((JSONObject) JWTUtil.parseToken(token).getPayload("body"),
+                (Class<T>) ((ParameterizedType) AuthUtil.class.getGenericSuperclass()).getActualTypeArguments()[0]
+                );
+        if (body == null) {
+            log.error("Token解析失败，请检查Token是否正确:{}",token);
+            return null;
+        }
+        return body;
+    }
 }
