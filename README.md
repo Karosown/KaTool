@@ -23,8 +23,8 @@ KaTool - 一款拥有七牛云文件处理、IP工具、IO工具、图形验证�
 <dependency>
   <groupId>cn.katool</groupId>
   <artifactId>KaTool</artifactId>
-  <*version>{{KaTool.version}}</version>
-        </dependency>
+  <version>{{KaTool.version}}</version>
+</dependency>
 ```
 
 
@@ -208,6 +208,8 @@ Git提交规范要求的格式通常如下：
 
 ## Update
 v1.9.5
+- RELEASE 2024 / 01 /14
+  - 使用双检锁优化分布式锁逻辑，解决高并发下，线程队列插入问题
 
 - GAMA 2023 / 12 /13	（待测试）
 
