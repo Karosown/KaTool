@@ -14,32 +14,32 @@ import java.util.stream.Collectors;
 
 public class ExcelUtils {
     public ByteArrayOutputStream convert(List<String> heads, List data, String sheetName,
-                                         List<List<String>> changeColList, List<HashMap<Integer,Integer>> mergeRowMapList,
-                                         List<List<String>> changeRowList, List<HashMap<Integer,Integer>> mergeColMapList) {
+                                         List<List<String>> changeColList, List<HashMap<Integer, Integer>> mergeRowMapList,
+                                         List<List<String>> changeRowList, List<HashMap<Integer, Integer>> mergeColMapList) {
         // 通过遍历res来进行单元格合并，使用once合并策略
         List<OnceAbsoluteMergeStrategy> mergeStrategyList = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(changeColList)
-                && CollectionUtils.isNotEmpty(mergeRowMapList)){
-            List<String>[] changRows= (List<String>[]) changeRowList.toArray();
-            HashMap<Integer,Integer>[] mergeRowMaps = (HashMap<Integer, Integer>[]) mergeRowMapList.toArray();
+                && CollectionUtils.isNotEmpty(mergeRowMapList)) {
+            List<String>[] changRows = (List<String>[]) changeRowList.toArray();
+            HashMap<Integer, Integer>[] mergeRowMaps = (HashMap<Integer, Integer>[]) mergeRowMapList.toArray();
             for (int i = 0; i < changRows.length; i++) {
-               List<String> changRow = changRows[i];
+                List<String> changRow = changRows[i];
                 for (String s : changRow) {
                     Integer b = Integer.valueOf(s.split(":")[0]);
                     Integer e = Integer.valueOf(s.split(":")[1]);
                     HashMap<Integer, Integer> mergeMap = mergeRowMaps[i];
-                        mergeMap.entrySet().forEach(v -> {
-                            for (int t = b; t <= e; t++) {
-                                mergeStrategyList.add(new OnceAbsoluteMergeStrategy(v.getKey(), v.getValue(), t, t));
-                            }
-                        });
+                    mergeMap.entrySet().forEach(v -> {
+                        for (int t = b; t <= e; t++) {
+                            mergeStrategyList.add(new OnceAbsoluteMergeStrategy(v.getKey(), v.getValue(), t, t));
+                        }
+                    });
                 }
             }
         }
         if (CollectionUtils.isNotEmpty(changeRowList)
-                && CollectionUtils.isNotEmpty(mergeColMapList)){
+                && CollectionUtils.isNotEmpty(mergeColMapList)) {
             List<String>[] changCols = (List<String>[]) changeColList.toArray();
-            HashMap<Integer,Integer>[] mergeColMaps = (HashMap<Integer, Integer>[]) mergeColMapList.toArray();
+            HashMap<Integer, Integer>[] mergeColMaps = (HashMap<Integer, Integer>[]) mergeColMapList.toArray();
             for (int i = 0; i < changCols.length; i++) {
                 List<String> changCol = changCols[i];
                 for (String s : changCol) {
@@ -62,7 +62,7 @@ public class ExcelUtils {
         }).collect(Collectors.toList());
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ExcelWriterBuilder write = EasyExcel.write(out);
-        mergeStrategyList.forEach(v->{
+        mergeStrategyList.forEach(v -> {
             write.registerWriteHandler(v);
         });
         write.head(header).sheet(sheetName).doWrite(data);
@@ -71,14 +71,14 @@ public class ExcelUtils {
 
 
     public ByteArrayOutputStream convert(Class clazz, List data, String sheetName,
-                                         List<List<String>> changeColList, List<HashMap<Integer,Integer>> mergeRowMapList,
-                                         List<List<String>> changeRowList, List<HashMap<Integer,Integer>> mergeColMapList) {
+                                         List<List<String>> changeColList, List<HashMap<Integer, Integer>> mergeRowMapList,
+                                         List<List<String>> changeRowList, List<HashMap<Integer, Integer>> mergeColMapList) {
         // 通过遍历res来进行单元格合并，使用once合并策略
         List<OnceAbsoluteMergeStrategy> mergeStrategyList = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(changeColList)
-                && CollectionUtils.isNotEmpty(mergeRowMapList)){
-            List<String>[] changRows= (List<String>[]) changeRowList.toArray();
-            HashMap<Integer,Integer>[] mergeRowMaps = (HashMap<Integer, Integer>[]) mergeRowMapList.toArray();
+                && CollectionUtils.isNotEmpty(mergeRowMapList)) {
+            List<String>[] changRows = (List<String>[]) changeRowList.toArray();
+            HashMap<Integer, Integer>[] mergeRowMaps = (HashMap<Integer, Integer>[]) mergeRowMapList.toArray();
             for (int i = 0; i < changRows.length; i++) {
                 List<String> changRow = changRows[i];
                 for (String s : changRow) {
@@ -94,9 +94,9 @@ public class ExcelUtils {
             }
         }
         if (CollectionUtils.isNotEmpty(changeRowList)
-                && CollectionUtils.isNotEmpty(mergeColMapList)){
+                && CollectionUtils.isNotEmpty(mergeColMapList)) {
             List<String>[] changCols = (List<String>[]) changeColList.toArray();
-            HashMap<Integer,Integer>[] mergeColMaps = (HashMap<Integer, Integer>[]) mergeColMapList.toArray();
+            HashMap<Integer, Integer>[] mergeColMaps = (HashMap<Integer, Integer>[]) mergeColMapList.toArray();
             for (int i = 0; i < changCols.length; i++) {
                 List<String> changCol = changCols[i];
                 for (String s : changCol) {
@@ -114,7 +114,7 @@ public class ExcelUtils {
         }
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         ExcelWriterBuilder write = EasyExcel.write(out);
-        mergeStrategyList.forEach(v->{
+        mergeStrategyList.forEach(v -> {
             write.registerWriteHandler(v);
         });
         write.head(clazz).sheet(sheetName).doWrite(data);
@@ -122,14 +122,14 @@ public class ExcelUtils {
     }
 
     public void convert(List<String> heads, List data, String sheetName, OutputStream out,
-                                         List<List<String>> changeColList, List<HashMap<Integer,Integer>> mergeRowMapList,
-                                         List<List<String>> changeRowList, List<HashMap<Integer,Integer>> mergeColMapList) {
+                        List<List<String>> changeColList, List<HashMap<Integer, Integer>> mergeRowMapList,
+                        List<List<String>> changeRowList, List<HashMap<Integer, Integer>> mergeColMapList) {
         // 通过遍历res来进行单元格合并，使用once合并策略
         List<OnceAbsoluteMergeStrategy> mergeStrategyList = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(changeColList)
-                && CollectionUtils.isNotEmpty(mergeRowMapList)){
-            List<String>[] changRows= (List<String>[]) changeRowList.toArray();
-            HashMap<Integer,Integer>[] mergeRowMaps = (HashMap<Integer, Integer>[]) mergeRowMapList.toArray();
+                && CollectionUtils.isNotEmpty(mergeRowMapList)) {
+            List<String>[] changRows = (List<String>[]) changeRowList.toArray();
+            HashMap<Integer, Integer>[] mergeRowMaps = (HashMap<Integer, Integer>[]) mergeRowMapList.toArray();
             for (int i = 0; i < changRows.length; i++) {
                 List<String> changRow = changRows[i];
                 for (String s : changRow) {
@@ -145,9 +145,9 @@ public class ExcelUtils {
             }
         }
         if (CollectionUtils.isNotEmpty(changeRowList)
-                && CollectionUtils.isNotEmpty(mergeColMapList)){
+                && CollectionUtils.isNotEmpty(mergeColMapList)) {
             List<String>[] changCols = (List<String>[]) changeColList.toArray();
-            HashMap<Integer,Integer>[] mergeColMaps = (HashMap<Integer, Integer>[]) mergeColMapList.toArray();
+            HashMap<Integer, Integer>[] mergeColMaps = (HashMap<Integer, Integer>[]) mergeColMapList.toArray();
             for (int i = 0; i < changCols.length; i++) {
                 List<String> changCol = changCols[i];
                 for (String s : changCol) {
@@ -169,7 +169,7 @@ public class ExcelUtils {
             return arrayList;
         }).collect(Collectors.toList());
         ExcelWriterBuilder write = EasyExcel.write(out);
-        mergeStrategyList.forEach(v->{
+        mergeStrategyList.forEach(v -> {
             write.registerWriteHandler(v);
         });
         write.head(header).sheet(sheetName).doWrite(data);
@@ -177,14 +177,14 @@ public class ExcelUtils {
 
 
     public void convert(Class clazz, List data, String sheetName, OutputStream out,
-                                         List<List<String>> changeColList, List<HashMap<Integer,Integer>> mergeRowMapList,
-                                         List<List<String>> changeRowList, List<HashMap<Integer,Integer>> mergeColMapList) {
+                        List<List<String>> changeColList, List<HashMap<Integer, Integer>> mergeRowMapList,
+                        List<List<String>> changeRowList, List<HashMap<Integer, Integer>> mergeColMapList) {
         // 通过遍历res来进行单元格合并，使用once合并策略
         List<OnceAbsoluteMergeStrategy> mergeStrategyList = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(changeColList)
-                && CollectionUtils.isNotEmpty(mergeRowMapList)){
-            List<String>[] changRows= (List<String>[]) changeRowList.toArray();
-            HashMap<Integer,Integer>[] mergeRowMaps = (HashMap<Integer, Integer>[]) mergeRowMapList.toArray();
+                && CollectionUtils.isNotEmpty(mergeRowMapList)) {
+            List<String>[] changRows = (List<String>[]) changeRowList.toArray();
+            HashMap<Integer, Integer>[] mergeRowMaps = (HashMap<Integer, Integer>[]) mergeRowMapList.toArray();
             for (int i = 0; i < changRows.length; i++) {
                 List<String> changRow = changRows[i];
                 for (String s : changRow) {
@@ -200,9 +200,9 @@ public class ExcelUtils {
             }
         }
         if (CollectionUtils.isNotEmpty(changeRowList)
-                && CollectionUtils.isNotEmpty(mergeColMapList)){
+                && CollectionUtils.isNotEmpty(mergeColMapList)) {
             List<String>[] changCols = (List<String>[]) changeColList.toArray();
-            HashMap<Integer,Integer>[] mergeColMaps = (HashMap<Integer, Integer>[]) mergeColMapList.toArray();
+            HashMap<Integer, Integer>[] mergeColMaps = (HashMap<Integer, Integer>[]) mergeColMapList.toArray();
             for (int i = 0; i < changCols.length; i++) {
                 List<String> changCol = changCols[i];
                 for (String s : changCol) {
@@ -219,7 +219,7 @@ public class ExcelUtils {
             }
         }
         ExcelWriterBuilder write = EasyExcel.write(out);
-        mergeStrategyList.forEach(v->{
+        mergeStrategyList.forEach(v -> {
             write.registerWriteHandler(v);
         });
         write.head(clazz).sheet(sheetName).doWrite(data);

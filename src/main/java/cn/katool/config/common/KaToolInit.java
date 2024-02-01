@@ -6,9 +6,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class KaToolInit {
 
-    public static String version = "1.9.5.RELEASE";
+    public static String version = "1.9.6.SNAPSHOT";
+
     @Bean("KaTool-Init")
-    void katoolConfig(){
+    void katoolConfig() {
         System.out.println(" ___  __    ________  _________  ________  ________  ___\n" +
                 "|\\  \\|\\  \\ |\\   __  \\|\\___   ___\\\\   __  \\|\\   __  \\|\\  \\\n" +
                 "\\ \\  \\/  /|\\ \\  \\|\\  \\|___ \\  \\_\\ \\  \\|\\  \\ \\  \\|\\  \\ \\  \\\n" +
@@ -16,6 +17,6 @@ public class KaToolInit {
                 "  \\ \\  \\\\ \\  \\ \\  \\ \\  \\   \\ \\  \\ \\ \\  \\\\\\  \\ \\  \\\\\\  \\ \\  \\____\n" +
                 "   \\ \\__\\\\ \\__\\ \\__\\ \\__\\   \\ \\__\\ \\ \\_______\\ \\_______\\ \\_______\\\n" +
                 "    \\|__| \\|__|\\|__|\\|__|    \\|__|  \\|_______|\\|_______|\\|_______|\n" +
-                "                                                          version:"+version);
+                "                                                          version:" + version);
     }
 }

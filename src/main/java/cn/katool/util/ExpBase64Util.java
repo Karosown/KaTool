@@ -18,15 +18,16 @@ public class ExpBase64Util extends Base64Utils {
 
     /**
      * To determine whether a string is a base64 expression, you can use the Base64 header
+     *
      * @param base64str
      * @return Returns a result indicating whether the current base64str meets the base64 code
      */
-    public static boolean isBase64(String base64str){
-        if (base64str==null||base64str.length()==0){
+    public static boolean isBase64(String base64str) {
+        if (base64str == null || base64str.length() == 0) {
             return false;
         }
-        if (base64str.length()>=11&"data:image/".equals(base64str.substring(0,11))){
-            base64str=base64str.substring(base64str.indexOf(',')+1);
+        if (base64str.length() >= 11 & "data:image/".equals(base64str.substring(0, 11))) {
+            base64str = base64str.substring(base64str.indexOf(',') + 1);
         }
         return base64str.matches(BASE64_PATTERN);
     }
