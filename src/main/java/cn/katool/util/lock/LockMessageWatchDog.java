@@ -19,7 +19,7 @@ import java.util.concurrent.locks.LockSupport;
 @Component
 @Slf4j
 public class LockMessageWatchDog implements MessageListener {
-    public static ConcurrentHashMap<String,ConcurrentLinkedQueue<Thread>> threadWaitQueue=new ConcurrentHashMap<>();;
+    public static volatile ConcurrentHashMap<String,ConcurrentLinkedQueue<Thread>> threadWaitQueue=new ConcurrentHashMap<>();;
     public static final String LOCK_MQ_NAME = "LOCK:RELASE:QUEUE";
 
 
@@ -38,12 +38,13 @@ public class LockMessageWatchDog implements MessageListener {
             threadWaitQueue.remove(lockName);
             return ;
         }
+        log.debug("threads:{}",threads);
             // 从线程等待队列中获取第一个线程
             Thread peek = threads.peek();
             log.debug("唤醒线程={}",peek.getName());
-            if (peek.isInterrupted()) {
+//            if (peek.isInterrupted()) {
                 LockSupport.unpark(peek);   // 竞争到后会自行删除
-            }
+//            }
     }
 
     //表示监听一个频道

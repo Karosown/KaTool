@@ -12,17 +12,24 @@ package cn.katool.util.database.nosql;
 
 
 import cn.hutool.core.util.ObjectUtil;
+import cn.katool.Exception.ErrorCode;
 import cn.katool.Exception.KaToolException;
+import cn.katool.util.ScheduledTaskUtil;
 import cn.katool.util.lock.LockUtil;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.*;
+import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
+
+import static cn.katool.util.lock.LockUtil.*;
 
 /**
  * Redis工具类
@@ -70,6 +77,54 @@ public class RedisUtils<K,V> {
             return false;
         }
         return (b+1)<=1;//防止出现精度丢失问题
+    }
+    public boolean tryLock(Object lockObj){
+        Thread thread = Thread.currentThread();
+        boolean state = lockUtil.luaToRedisByLock("tryLock:" + lockObj.toString(), 30L, TimeUnit.SECONDS, new String[1]) == null;
+        if (state){
+            ScheduledFuture<?> scheduledFuture = ScheduledTaskUtil.submitTask(new Runnable() {
+                @SneakyThrows
+                @Override
+                public void run() {
+
+                    boolean alive = thread.isAlive()||thread.isInterrupted();
+                    ScheduledFuture future = getThreadWatchDog().get(thread.getId());
+                    if (alive) {
+                        log.debug("Thread ID:{} 线程仍然存活，看门狗续期中...", thread.getId());
+                        lockUtil.delayDistributedLock("tryLock:" + lockObj.toString(), 30L, TimeUnit.SECONDS);
+                        return;
+                    } else {
+                        if (future.isCancelled()||future.isDone()) {
+                            log.error("Thread ID:{} 线程已经死亡，但是没有对应的scheduleId", thread.getId());
+                            return;
+                        }
+                        log.debug("Thread ID:{} 线程死亡，看门狗自动解锁", thread.getId());
+                        lockUtil.luaToRedisByUnLock("tryLock:" + lockObj.toString(), Thread.currentThread());
+                        future.cancel(true);
+                        return;
+                    }
+                }
+            },10L, 10L, TimeUnit.SECONDS);
+        getThreadWatchDog().put(thread.getId(),scheduledFuture);
+        }
+        return state;
+    }
+    public boolean unTryLock(Object lockObj){
+        if (ObjectUtils.isEmpty(lockObj)){
+            try {
+                throw new KaToolException(ErrorCode.PARAMS_ERROR," Lock=> 传入obj为空");
+            } catch (KaToolException e) {
+                throw new RuntimeException(e);
+            }
+        }
+//                由于这里有了可重入锁，不应该直接删除Boolean aBoolean = redisTemplate.delete("Lock:" + obj.toString());
+        Long remainLocks = lockUtil.luaToRedisByUnLock("tryLock:" + lockObj.toString(),Thread.currentThread());
+        if (remainLocks == 0){
+            getThreadWatchDog().get(Thread.currentThread().getId()).cancel(true);
+            getThreadWatchDog().remove(Thread.currentThread().getId());
+        }
+        log.debug("katool=> LockUntil => unDistributedLock:{} isdelete:{} watchDog is cancel and drop", lockObj.toString(),true);
+        return remainLocks==0;
     }
     public boolean lock(Object lockObj){
         return lockUtil.DistributedLock(lockObj,false);

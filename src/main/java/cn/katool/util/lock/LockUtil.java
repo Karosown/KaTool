@@ -186,13 +186,20 @@ public class LockUtil {
                         log.debug("【KaTool::LockUtil】 {}未抢到锁，线程等待通知唤醒，最多等待时间：{}，锁名：{}，过期时间：{}，单位：{}",hashkey[0],aLong,lockName,exptime,timeUnit);
 //                                Thread.sleep(aLong/3);     // 初步改进：使用线程休眠，采用自旋锁+线程互斥
                         if (ObjectUtil.isEmpty(threads)){
-                                threads=new ConcurrentLinkedQueue<Thread>();
-                                log.debug("新增线程进入等待lock:{}队列",lockName);
+                                synchronized (lockName.intern()){
+                                        threads=threadWaitQueue.get(lockName);
+                                        if (ObjectUtil.isEmpty(threads)){
+                                                threads=new ConcurrentLinkedQueue<Thread>();
+                                log.debug("【{}-created】新增线程进入lock:{}等待队列",Thread.currentThread().getId(),lockName);
                                 threadWaitQueue.putIfAbsent(lockName,threads);
-                                log.debug("threadWaitQueue:{}",threadWaitQueue);;
+                                log.debug("【{}-created】threadWaitQueue:{},threads:{}",Thread.currentThread().getId(),threadWaitQueue,threads);
+                                        }
+                                }
                         }
                         if (!threads.contains(currentThread)) {
-                               threads.add(currentThread);
+                                log.debug("【{}-add】新增线程进入lock:{}等待队列",Thread.currentThread().getId(),lockName);
+                                threads.add(currentThread);
+                                log.debug("【{}-add】threadWaitQueue:{},threads:{}",Thread.currentThread().getId(),threadWaitQueue,threads);
                         }
                         log.debug("threadWaitQueue:{}",threadWaitQueue);;
                         if(isAgress){
@@ -201,7 +208,7 @@ public class LockUtil {
                         else{
                                 LockSupport.park();
                         }
-                        log.debug("【KaTool::LockUtil】 {}未抢到锁，线程被唤醒，重新抢锁，锁名：{}，过期时间：{}，单位：{}",hashkey[0],lockName,exptime,timeUnit);
+                        log.debug("katool=> {}未抢到锁，线程被唤醒，重新抢锁，锁名：{}，过期时间：{}，单位：{}",hashkey[0],lockName,exptime,timeUnit);
                 }
                 // 获得线程锁，被唤醒后删除自身的thread队列，避免死锁
                 if (threads!=null&&threads.contains(currentThread)) {
@@ -221,7 +228,7 @@ public class LockUtil {
                                         ScheduledFuture future = threadWatchDog.get(thread.getId());
                                         if (alive) {
                                                 log.debug("Thread ID:{} 线程仍然存活，看门狗续期中...", thread.getId());
-                                                delayDistributedLock(obj, finalExptime >= 3 ? (finalExptime) / 3 : finalExptime, finalTimeUnit);
+                                                delayDistributedLock(obj, finalExptime, finalTimeUnit);
                                                 return;
                                         } else {
                                                 if (future.isCancelled()||future.isDone()) {
@@ -234,12 +241,17 @@ public class LockUtil {
                                                 return;
                                         }
                                 }
-                        },finalExptime, finalExptime, finalTimeUnit);
+                        },finalExptime >= 3 ? (finalExptime) / 3 : finalExptime, finalExptime >= 3 ? (finalExptime) / 3 : finalExptime, finalTimeUnit);
                         threadWatchDog.put(thread.getId(),scheduledFuture);
                 }
                 return BooleanUtil.isTrue(aLong!=null);
         }
-        ConcurrentHashMap<Long,ScheduledFuture> threadWatchDog=new ConcurrentHashMap<>();
+        private static ConcurrentHashMap<Long,ScheduledFuture> threadWatchDog=new ConcurrentHashMap<>();
+
+        public static ConcurrentHashMap<Long, ScheduledFuture> getThreadWatchDog() {
+                return threadWatchDog;
+        }
+
         //延期
         public boolean delayDistributedLock(Object obj,Long exptime,TimeUnit timeUnit) throws KaToolException {
                 if (ObjectUtils.isEmpty(obj)){
