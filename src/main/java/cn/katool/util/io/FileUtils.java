@@ -21,10 +21,10 @@ import java.io.IOException;
 @Component
 @Slf4j
 public class FileUtils {
-    public static File createTempFile() throws KaToolException {
+    public static File createTempFile(){
         return createTempFile(true);
     }
-    public static File createTempFile(boolean isReCreate) throws KaToolException {
+    public static File createTempFile(boolean isReCreate){
         int num=0;
         while (true) {
             try {
@@ -33,12 +33,12 @@ public class FileUtils {
                    tempFile.delete();
                    tempFile.createNewFile();
                 }
-                log.info("katool=> FileUtils=> Info: 临时文件创建成功");
+                log.info("【KaTool::FileUtils】 =>  Info: 临时文件创建成功");
                 return tempFile;
             } catch (IOException e) {
-                log.warn("katool=> FileUtils=> Warn: 临时文件创建重试");
+                log.warn("【KaTool::FileUtils】 =>  Warn: 临时文件创建重试");
                 if (num++>50){
-                    log.error("katool=> FileUtils=> Error: 临时文件创建失败");
+                    log.error("【KaTool::FileUtils】 =>  Error: 临时文件创建失败");
                     throw new KaToolException(ErrorCode.FILE_ERROR);
                 }
             }

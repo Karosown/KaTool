@@ -25,9 +25,9 @@ import java.util.Date;
 public class ExpDateUtil extends DateUtil {
 
 
-    public static String getCorn(Date date) throws KaToolException {
+    public static String getCorn(Date date){
         if (ObjectUtils.isEmpty(date)) {
-            throw new KaToolException(ErrorCode.PARAMS_ERROR,"expDateUtil=>\ngetCorn=> 请传入一个正确的date");
+            throw new KaToolException(ErrorCode.PARAMS_ERROR,"【KaTool::ExpDateUtil】 getCorn =>  请传入一个正确的date");
         }
         SimpleDateFormat simpleDateFormat=newSimpleFormat("ss mm HH dd MM ? yyyy");
         return simpleDateFormat.format(date);
@@ -35,7 +35,7 @@ public class ExpDateUtil extends DateUtil {
 
     public static Date getDate(String corn) throws KaToolException, ParseException {
         if (StringUtil.isNullOrEmpty(corn)) {
-            throw new KaToolException(ErrorCode.PARAMS_ERROR,"expDateUtil=>\ngetDate=> 请传入一个正确的Corn");
+            throw new KaToolException(ErrorCode.PARAMS_ERROR,"【KaTool::ExpDateUtil】 getDate =>  请传入一个正确的Corn");
         }
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("ss mm HH dd MM ? yyyy");
         Date parse = simpleDateFormat.parse(corn);

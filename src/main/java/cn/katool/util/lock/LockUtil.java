@@ -110,7 +110,7 @@ public class LockUtil {
 //                log.debug("lockLua -> {}",lockScript);
                 Long execute = (Long) redisTemplate.execute(defaultRedisScript, keys, args.toArray());
                 if (ObjectUtil.isEmpty(execute)) {
-                        log.debug("katool=> {}成功抢到锁，锁名：{}，过期时间：{}，单位：{}",hashKey,lockName,expTime,timeUnit);
+                        log.debug("【KaTool::LockUtil】 {}成功抢到锁，锁名：{}，过期时间：{}，单位：{}",hashKey,lockName,expTime,timeUnit);
                 }
                 return execute;
         }
@@ -131,10 +131,10 @@ public class LockUtil {
 //                log.debug("unlockLua -> {}",unLockScript);
                 Long remainLocks = (Long) redisTemplate.execute(defaultRedisScript, keys, args.toArray());
                 if (ObjectUtil.isEmpty(remainLocks)) {
-                        log.error("katool=> {}释放锁失败，请释放自己的锁，锁名：{}",hashKey,lockName);
+                        log.error("【KaTool::LockUtil】 {}释放锁失败，请释放自己的锁，锁名：{}",hashKey,lockName);
                 }
                 else if(remainLocks==0){
-                        log.debug("katool=> {}成功释放锁，锁名：{}",hashKey,lockName);
+                        log.debug("【KaTool::LockUtil】 {}成功释放锁，锁名：{}",hashKey,lockName);
                         redisTemplate.convertAndSend(LOCK_MQ_NAME,lockName);
                 }
                 return remainLocks;
@@ -164,7 +164,7 @@ public class LockUtil {
          */
         public boolean DistributedLock(Object obj,Long exptime,TimeUnit timeUnit,Boolean isDelay,Boolean isAgress) throws KaToolException {
                 if (ObjectUtil.isEmpty(obj)){
-                        throw new KaToolException(ErrorCode.PARAMS_ERROR," Lock=> 传入obj为空");
+                        throw new KaToolException(ErrorCode.PARAMS_ERROR," Lock =>  传入obj为空");
                 }
                 if(ObjectUtil.isEmpty(exptime)){
                         exptime= lockConfig.getInternalLockLeaseTime();;
@@ -183,23 +183,16 @@ public class LockUtil {
                                 if (aLong==null) {
                                         break;
                                 }
-                        log.debug("katool=> {}未抢到锁，线程等待通知唤醒，最多等待时间：{}，锁名：{}，过期时间：{}，单位：{}",hashkey[0],aLong,lockName,exptime,timeUnit);
+                        log.debug("【KaTool::LockUtil】 {}未抢到锁，线程等待通知唤醒，最多等待时间：{}，锁名：{}，过期时间：{}，单位：{}",hashkey[0],aLong,lockName,exptime,timeUnit);
 //                                Thread.sleep(aLong/3);     // 初步改进：使用线程休眠，采用自旋锁+线程互斥
                         if (ObjectUtil.isEmpty(threads)){
-                                synchronized (lockName.intern()){
-                                        threads=threadWaitQueue.get(lockName);
-                                        if (ObjectUtil.isEmpty(threads)){
-                                                threads=new ConcurrentLinkedQueue<Thread>();
-                                log.debug("【{}-created】新增线程进入lock:{}等待队列",Thread.currentThread().getId(),lockName);
+                                threads=new ConcurrentLinkedQueue<Thread>();
+                                log.debug("新增线程进入等待lock:{}队列",lockName);
                                 threadWaitQueue.putIfAbsent(lockName,threads);
-                                log.debug("【{}-created】threadWaitQueue:{},threads:{}",Thread.currentThread().getId(),threadWaitQueue,threads);
-                                        }
-                                }
+                                log.debug("threadWaitQueue:{}",threadWaitQueue);;
                         }
                         if (!threads.contains(currentThread)) {
-                                log.debug("【{}-add】新增线程进入lock:{}等待队列",Thread.currentThread().getId(),lockName);
-                                threads.add(currentThread);
-                                log.debug("【{}-add】threadWaitQueue:{},threads:{}",Thread.currentThread().getId(),threadWaitQueue,threads);
+                               threads.add(currentThread);
                         }
                         log.debug("threadWaitQueue:{}",threadWaitQueue);;
                         if(isAgress){
@@ -208,7 +201,7 @@ public class LockUtil {
                         else{
                                 LockSupport.park();
                         }
-                        log.debug("katool=> {}未抢到锁，线程被唤醒，重新抢锁，锁名：{}，过期时间：{}，单位：{}",hashkey[0],lockName,exptime,timeUnit);
+                        log.debug("【KaTool::LockUtil】 {}未抢到锁，线程被唤醒，重新抢锁，锁名：{}，过期时间：{}，单位：{}",hashkey[0],lockName,exptime,timeUnit);
                 }
                 // 获得线程锁，被唤醒后删除自身的thread队列，避免死锁
                 if (threads!=null&&threads.contains(currentThread)) {
@@ -228,7 +221,7 @@ public class LockUtil {
                                         ScheduledFuture future = threadWatchDog.get(thread.getId());
                                         if (alive) {
                                                 log.debug("Thread ID:{} 线程仍然存活，看门狗续期中...", thread.getId());
-                                                delayDistributedLock(obj, finalExptime, finalTimeUnit);
+                                                delayDistributedLock(obj, finalExptime >= 3 ? (finalExptime) / 3 : finalExptime, finalTimeUnit);
                                                 return;
                                         } else {
                                                 if (future.isCancelled()||future.isDone()) {
@@ -241,25 +234,20 @@ public class LockUtil {
                                                 return;
                                         }
                                 }
-                        },finalExptime >= 3 ? (finalExptime) / 3 : finalExptime, finalExptime >= 3 ? (finalExptime) / 3 : finalExptime, finalTimeUnit);
+                        },finalExptime, finalExptime, finalTimeUnit);
                         threadWatchDog.put(thread.getId(),scheduledFuture);
                 }
                 return BooleanUtil.isTrue(aLong!=null);
         }
-        private static ConcurrentHashMap<Long,ScheduledFuture> threadWatchDog=new ConcurrentHashMap<>();
-
-        public static ConcurrentHashMap<Long, ScheduledFuture> getThreadWatchDog() {
-                return threadWatchDog;
-        }
-
+        ConcurrentHashMap<Long,ScheduledFuture> threadWatchDog=new ConcurrentHashMap<>();
         //延期
         public boolean delayDistributedLock(Object obj,Long exptime,TimeUnit timeUnit) throws KaToolException {
                 if (ObjectUtils.isEmpty(obj)){
-                        throw new KaToolException(ErrorCode.PARAMS_ERROR," Lock=> 传入obj为空");
+                        throw new KaToolException(ErrorCode.PARAMS_ERROR," Lock =>  传入obj为空");
                 }
                 //本身就是一句话，具备原子性，没有必要使用lua脚本
                 Boolean expire = luaToRedisByDelay("Lock:"+obj.toString(),exptime,timeUnit);
-                log.debug("katool=> LockUntil => delayDistributedLock:{} value:{} extime:{} timeUnit:{}",obj.toString(), "1", exptime, timeUnit);
+                log.debug("【KaTool::LockUntil】  =>  delayDistributedLock:{} value:{} extime:{} timeUnit:{}",obj.toString(), "1", exptime, timeUnit);
                 return BooleanUtil.isTrue(expire);
         }
         //释放锁
@@ -270,7 +258,7 @@ public class LockUtil {
 
         public Long DistributedUnLock(Object obj,Thread thread) throws KaToolException {
                 if (ObjectUtils.isEmpty(obj)){
-                        throw new KaToolException(ErrorCode.PARAMS_ERROR," Lock=> 传入obj为空");
+                        throw new KaToolException(ErrorCode.PARAMS_ERROR," Lock =>  传入obj为空");
                 }
 //                由于这里有了可重入锁，不应该直接删除Boolean aBoolean = redisTemplate.delete("Lock:" + obj.toString());
                 Long remainLocks = luaToRedisByUnLock("Lock:" + obj.toString(),thread);
@@ -278,7 +266,7 @@ public class LockUtil {
                         threadWatchDog.get(Thread.currentThread().getId()).cancel(true);
                         threadWatchDog.remove(Thread.currentThread().getId());
                 }
-                log.debug("katool=> LockUntil => unDistributedLock:{} isdelete:{} watchDog is cancel and drop",obj.toString(),true);
+                log.debug("【KaTool::LockUntil】  =>  unDistributedLock:{} isdelete:{} watchDog is cancel and drop",obj.toString(),true);
                 return remainLocks;
         }
         //利用枚举类实现单例模式，枚举类属性为静态的

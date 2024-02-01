@@ -19,12 +19,12 @@ public class AliYunStoreService implements IAliYunStoreService {
     }
 
     @Override
-    public boolean isExist(String dir, String fileName) throws KaToolException {
+    public boolean isExist(String dir, String fileName){
         return false;
     }
 
     @Override
-    public boolean isExist(String dir, String fileName_fast, String fileName_second) throws KaToolException {
+    public boolean isExist(String dir, String fileName_fast, String fileName_second){
         return false;
     }
 

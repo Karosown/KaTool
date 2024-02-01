@@ -10,7 +10,7 @@
 
 package cn.katool.Exception;
 
-public class KaToolException extends Exception{
+public class KaToolException extends RuntimeException{
     private final int code;
 
     public KaToolException(int code, String message) {

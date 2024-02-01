@@ -64,7 +64,7 @@ public class QiNiuYunServiceImpl implements IQiNiuYunService, InitializingBean {
     }
 
     @Override
-    public boolean isExist(String dir,String fileName) throws KaToolException {
+    public boolean isExist(String dir,String fileName){
         File tempFile = FileUtils.createTempFile();
         try {
             uploadFile(tempFile,dir,fileName,false);
@@ -83,7 +83,7 @@ public class QiNiuYunServiceImpl implements IQiNiuYunService, InitializingBean {
     }
 
     @Override
-    public boolean isExist(String dir,String fileName_fast, String fileName_second) throws KaToolException {
+    public boolean isExist(String dir,String fileName_fast, String fileName_second){
         return isExist(dir,fileName_fast+fileName_second);
     }
 

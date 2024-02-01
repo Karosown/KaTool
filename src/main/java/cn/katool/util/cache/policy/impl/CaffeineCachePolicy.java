@@ -7,7 +7,7 @@ import javax.annotation.Resource;
 
 
 public class CaffeineCachePolicy implements CachePolicy {
-    @Resource
+    @Resource()
     private CaffeineUtils<Object,Object>  caffeineUtils;
 
     @Override

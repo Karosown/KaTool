@@ -55,14 +55,14 @@ public class SpringContextUtils implements ApplicationContextAware {
         return applicationContext.getBean(beanName, beanClass);
     }
 
-    public void regBean(String beanName, Object bean) {
+    public static void regBean(String beanName, Object bean) {
         if (SpringContextUtils.contain(beanName)) {
             unregBean(beanName);
         }
         SpringUtil.registerBean(beanName, bean);
     }
 
-    public void unregBean(String beanName){
+    public static void unregBean(String beanName){
         if (!SpringContextUtils.contain(beanName)) {
             return;
         }

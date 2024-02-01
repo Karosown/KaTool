@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class KaToolInit {
 
-    public static String version = "1.9.5.RELEASE";
+    public static String version = "1.9.5.GAMA";
     @Bean("KaTool-Init")
     void katoolConfig(){
         System.out.println(" ___  __    ________  _________  ________  ________  ___\n" +

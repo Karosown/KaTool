@@ -42,9 +42,9 @@ public class ClassUtil{
             else {
                 replace = className;
             }
-            log.info("url:{}",url);
+            log.info("【KaTool::ClassUtil::urlLoader】url:{}",url);
             String fileDir = (url+ ((url.charAt(url.length()-1)=='/'||url.charAt(url.length()-1)=='\\')?"":"\\")  + replace.concat(".class")).replace("/","\\");
-            log.info("class file dir:{}",fileDir);
+            log.info("【KaTool::ClassUtil::urlLoader】class file dir:{}",fileDir);
             File file = new File(fileDir);
             // 如果class文件不存在，Sleep阻塞等待3次，再进行判断
             if (!file.exists()){
@@ -52,8 +52,8 @@ public class ClassUtil{
                     threadLocal.set(1);
                 }
                 if (Objects.equals(threadLocal.get(), tryLimit)){
-                    log.info("{}加载错误",file.getAbsolutePath());
-                    throw new KaToolException(ErrorCode.OPER_ERROR,"加载错误，请检查.class文件是否正确");
+                    log.info("【KaTool::ClassUtil::urlLoader】{}加载错误",file.getAbsolutePath());
+                    throw new KaToolException(ErrorCode.OPER_ERROR,"【KaTool::ClassUtil::urlLoader】加载错误，请检查.class文件是否正确");
                 }
                 threadLocal.set(threadLocal.get()+1);
                 Thread.sleep(10000L/threadLocal.get());
@@ -81,7 +81,7 @@ public class ClassUtil{
         OutputStream outputStream = null;
         Pair<Boolean,String> result=null;
         Boolean call = null;
-        log.info("complieClass: {} className:{}",souceCodeFilePath,className);
+        log.info("【KaTool::ClassUtil::complieClass】complieClass: {} className:{}",souceCodeFilePath,className);
         try {
             JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
             System.out.println(compiler.getClass().getName());
@@ -91,7 +91,7 @@ public class ClassUtil{
                     threadLocal.set(1);
                 }
                 if (Objects.equals(threadLocal.get(), tryLimit)){
-                    throw new KaToolException(ErrorCode.OPER_ERROR,"编译错误，请检查代码文件是否正确");
+                    throw new KaToolException(ErrorCode.OPER_ERROR,"【KaTool::ClassUtil::complieClass】编译错误，请检查代码文件是否正确");
                 }
                 threadLocal.set(threadLocal.get()+1);
                 Thread.sleep(10000L/threadLocal.get());

@@ -44,7 +44,7 @@ public class AuthUtil<T> {
 
     public static String getToken(HttpServletRequest request){
         if (ObjectUtils.isEmpty(request)){
-            throw new RuntimeException("request is null");
+            throw new RuntimeException("【KaTool::AuthUtil::getToken】request is null");
         }
         return  request.getHeader(AuthConstant.TOKEN_HEADER);
     }
@@ -55,14 +55,14 @@ public class AuthUtil<T> {
      */
     public static String createToken(Object payloadObj,Class clazz) {
         // 构建header
-        log.info("token.header create begin:{}",payloadObj);
+        log.debug("【KaTool::AuthUtil::createToken】token.header create begin:{}",payloadObj);
         Map<String, Object> header = new HashMap<>();
         header.put("alg", "HS256");
         header.put("typ", "JWT");
         long currentTimeMillis = System.currentTimeMillis();
         Date expireDate = new Date(currentTimeMillis + EXPIRE_TIME);
         header.put("expTime",expireDate.getTime());
-        log.info("token.header create end and payload begin:{}",payloadObj);
+        log.debug("【KaTool::AuthUtil::createToken】token.header create end and payload begin:{}",payloadObj);
         // 构建payload
         Map<String, Object> payload = new HashMap<>();
         Object payloadEntity = null;
@@ -73,14 +73,14 @@ public class AuthUtil<T> {
         } catch (InstantiationException e) {
             throw new RuntimeException(e);
         } catch (IllegalAccessException e) {
-            e.addSuppressed(new Exception("[KaTool-Excepton Warning] 请检查payloadObj是否为内部类，如果是，可以尝试改为静态内部类或者变为外部类来解决。"));
+            e.addSuppressed(new Exception("【KaTool-Excepton Warning::AuthUtil::createToken】请检查payloadObj是否为内部类，如果是，可以尝试改为静态内部类或者变为外部类来解决。"));
             throw new RuntimeException(e);
         }
-        log.info("token.header payload end and generate Token begin:{},{},{},{}",header,payload,SALT_KEY,payloadObj);
+        log.debug("【KaTool::AuthUtil::createToken】token.header payload end and generate Token begin:{},{},{},{}",header,payload,SALT_KEY,payloadObj);
         // 生成Token
         String token = JWTUtil.createToken(header, payload, SALT_KEY.getBytes());
 
-        log.info("PayLoad:[{}] 生成Token成功！\n" +
+        log.debug("【KaTool::AuthUtil::createToken】PayLoad:[{}] 生成Token成功！\n" +
                 "过期时间为：【{}】\n" +
                 "header：\n" +
                 "【{}】\n" +
@@ -94,22 +94,22 @@ public class AuthUtil<T> {
 
     public static String createToken(Object payloadObj) {
         // 构建header
-        log.info("token.header create begin:{}",payloadObj);
+        log.debug("【KaTool::AuthUtil::createToken】token.header create begin:{}",payloadObj);
         Map<String, Object> header = new HashMap<>();
         header.put("alg", "HS256");
         header.put("typ", "JWT");
         long currentTimeMillis = System.currentTimeMillis();
         Date expireDate = new Date(currentTimeMillis + EXPIRE_TIME);
         header.put("expTime",expireDate.getTime());
-        log.info("token.header create end and payload begin:{}",payloadObj);
+        log.debug("【KaTool::AuthUtil::createToken】token.header create end and payload begin:{}",payloadObj);
         // 构建payload
         Map<String, Object> payload = new HashMap<>();
         payload.put("body", payloadObj);
-        log.info("token.header payload end and generate Token begin:{},{},{},{}",header,payload,SALT_KEY,payloadObj);
+        log.debug("【KaTool::AuthUtil::createToken】token.header payload end and generate Token begin:{},{},{},{}",header,payload,SALT_KEY,payloadObj);
         // 生成Token
         String token = JWTUtil.createToken(header, payload, SALT_KEY.getBytes());
 
-        log.info("PayLoad:[{}] 生成Token成功！\n" +
+        log.debug("\n【KaTool::AuthUtil::createToken】PayLoad:[{}] 生成Token成功！\n" +
                 "过期时间为：【{}】\n" +
                 "header：\n" +
                 "【{}】\n" +
@@ -130,14 +130,14 @@ public class AuthUtil<T> {
         if (StringUtil.isNullOrEmpty(token)||"default".equals(token)){
             return false;
         }
-        log.info("token verify:{}",token);
+        log.info("【KaTool::AuthUtil::verifyToken】token verify:{}",token);
         boolean verify = JWTUtil.verify(token, SALT_KEY.getBytes());
         if (!verify) {
-            log.error("Token解析失败，请检查Token是否正确");
+            log.error("【KaTool::AuthUtil::verifyToken】Token解析失败，请检查Token是否正确");
             return false;
         }
         if (isExpired(token)){
-            log.error("Token已过期，请重新登录");
+            log.error("【KaTool::AuthUtil::verifyToken】Token已过期，请重新登录");
             return false;
         }
         return true;
@@ -150,11 +150,11 @@ public class AuthUtil<T> {
      */
     public static boolean isExpired(String token) {
         JWT jwt = JWTUtil.parseToken(token);
-        log.info("jwt:{}",jwt.getHeader());
+        log.debug("【KaTool::AuthUtil::isExpired】jwt:{}",jwt.getHeader());
         Date expTime = new Date(Long.valueOf(jwt.getHeader("expTime").toString()));
         Date currentTime = new Date();
         boolean isBefore = expTime.before(currentTime);
-        log.info("expTime:{} , Now:{} , isBefore:{}",expTime,currentTime,isBefore);
+        log.debug("【KaTool::AuthUtil::isExpired】expTime:{} , Now:{} , isBefore:{}",expTime,currentTime,isBefore);
         return isBefore;
     }
 
@@ -169,7 +169,7 @@ public class AuthUtil<T> {
         }
         Object body = JSONUtil.toBean((JSONObject) JWTUtil.parseToken(token).getPayload("body"),clazz);
         if (body == null) {
-            log.error("Token解析失败，请检查Token是否正确:{}",token);
+            log.error("【KaTool::AuthUtil::getPayLoadFromToken】Token解析失败，请检查Token是否正确:{}",token);
             return null;
         }
         return body;
@@ -183,7 +183,7 @@ public class AuthUtil<T> {
                 (Class<T>) ((ParameterizedType) AuthUtil.class.getGenericSuperclass()).getActualTypeArguments()[0]
                 );
         if (body == null) {
-            log.error("Token解析失败，请检查Token是否正确:{}",token);
+            log.error("【KaTool::AuthUtil::getPayLoadFromToken】Token解析失败，请检查Token是否正确:{}",token);
             return null;
         }
         return body;

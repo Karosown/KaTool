@@ -1,6 +1,8 @@
 package cn.katool.config.util;
 
+import cn.katool.common.MethodInterface;
 import cn.katool.config.cache.CacheConfig;
+import cn.katool.util.cache.policy.impl.EhCacheCachePolicy;
 import cn.katool.util.lock.LockUtil;
 import cn.katool.util.cache.policy.CachePolicy;
 import cn.katool.util.cache.policy.impl.CaffeineCachePolicy;
@@ -16,6 +18,8 @@ import org.springframework.context.annotation.*;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
+import java.util.function.Supplier;
 
 
 @Slf4j
@@ -33,6 +37,9 @@ public class RedisUtilConfig {
 
     private String policy="default";    // 不写采用默认策略，默认情况下缓存Cache使用的策略
 
+    private static HashMap<String, MethodInterface<CachePolicy>>
+            REDIS_UTIL_CACHE_POLICY_MAPPER = new HashMap<>();
+
     // 采用的缓存策略
     @Bean("katool-redisutil-cachepolicy")
     @DependsOn({"KaTool-Init"})
@@ -41,15 +48,8 @@ public class RedisUtilConfig {
         if ("default".equals(policy)){
             policy = cacheConfig.getPolicy();
         }
-        switch (policy) {
-            case "caffeine":
-                log.info("【Bean工厂】katool-redisutil-cachepolicy=>使用Caffeine缓存策略");
-                // 这里面的CaffeineUtil会进行自动装配
-                return new CaffeineCachePolicy();
-            default:
-                log.info("【Bean工厂】katool-redisutil-cachepolicy=>使用默认策略，直接走redis");
-                return new DefaultCachePolicy();
-        }
+        MethodInterface<CachePolicy> runMehtod = REDIS_UTIL_CACHE_POLICY_MAPPER.get(policy);
+        return runMehtod.apply();
     }
 
 
@@ -66,6 +66,23 @@ public class RedisUtilConfig {
     @DependsOn({"KaTool-Init"})
     public LockUtil LockUtil(){
         return LockUtil.getInstance();
+    }
+
+
+    {
+        log.info("【KaTool::Bean Factory】katool-redisutil-cachepolicy => 初始化预备缓存策略【{}】","REDIS_UTIL_CACHE_POLICY_MAPPER");
+        REDIS_UTIL_CACHE_POLICY_MAPPER.put("caffeine", ((MethodInterface)()->{
+            log.info("【KaTool::Bean Factory】katool-redisutil-cachepolicy => 使用Caffeine缓存策略");
+            return null;
+        }).andThen(() -> new CaffeineCachePolicy()));
+        REDIS_UTIL_CACHE_POLICY_MAPPER.put("default", ((MethodInterface)()->{
+            log.info("【KaTool::Bean Factory】katool-redisutil-cachepolicy => 使用默认策略，直接走redis");
+            return null;
+        }).andThen(() -> new DefaultCachePolicy()));
+        REDIS_UTIL_CACHE_POLICY_MAPPER.put("ehcache", ((MethodInterface)()->{
+            log.info("【KaTool::Bean Factory】katool-redisutil-cachepolicy => 使用Ehcache缓存策略");
+            return null;
+        }).andThen(() -> new EhCacheCachePolicy()));
     }
 
 

@@ -50,8 +50,8 @@ public class RedisUtilsInterceptor {
         if (ObjectUtils.isEmpty(value)){
             return aroundByGetResponse(joinPoint);
         }
-        log.info("RedisUtil-AOP => {}: 命中内存缓存，key:{}", joinPoint.getSignature().getName(),key);
-        log.info("RedisUtil-AOP => key:{} || value：{}", key,value);
+        log.debug("【KaTool::RedisUtil::AOP】RedisUtil-CachePolicy  =>  {}: 命中内存缓存，key:{}", joinPoint.getSignature().getName(),key);
+        log.debug("【KaTool::RedisUtil::AOP】RedisUtil-CachePolicy  =>  key:{} || value：{}", key,value);
         return value;
     }
 
@@ -72,8 +72,8 @@ public class RedisUtilsInterceptor {
         List cache = value.subList(Math.toIntExact(cont), value.size());
         value=value.subList(0, Math.toIntExact(cont));
         cachePolicy.setOrUpdate(key,cache);
-        log.info("RedisUtil-AOP => {}: 命中内存缓存，key:{}", joinPoint.getSignature().getName(),key);
-        log.info("RedisUtil-AOP => key:{} || value：{}", key,value);
+        log.debug("【KaTool::RedisUtil::AOP】RedisUtil-CachePolicy  =>  {}: 命中内存缓存，key:{}", joinPoint.getSignature().getName(),key);
+        log.debug("【KaTool::RedisUtil::AOP】RedisUtil-CachePolicy  =>  key:{} || value：{}", key,value);
         return value;
     }
     @Around("execution(* cn.katool.util.database.nosql.RedisUtils.rightPopList(*,*))")
@@ -93,8 +93,8 @@ public class RedisUtilsInterceptor {
         List cache = value.subList(0, Math.toIntExact(cont));
         value=value.subList(Math.toIntExact(value.size() - cont),value.size());
         cachePolicy.setOrUpdate(key,cache);
-        log.info("RedisUtil-AOP => {}: 命中内存缓存，key:{}", joinPoint.getSignature().getName(),key);
-        log.info("RedisUtil-AOP => key:{} || value：{}", key,value);
+        log.debug("【KaTool::RedisUtil::AOP】RedisUtil-CachePolicy  =>  {}: 命中内存缓存，key:{}", joinPoint.getSignature().getName(),key);
+        log.debug("【KaTool::RedisUtil::AOP】RedisUtil-CachePolicy  =>  key:{} || value：{}", key,value);
         return value;
     }
 
@@ -109,10 +109,10 @@ public class RedisUtilsInterceptor {
         if (!casePolicy()){
             return aroundByGetResponse(joinPoint);
         }
-        log.info("RedisUtil-AOP => {}: 命中内存缓存，key:{}", joinPoint.getSignature().getName(),key);
+        log.debug("【KaTool::RedisUtil::AOP】RedisUtil-CachePolicy  =>  {}: 命中内存缓存，key:{}", joinPoint.getSignature().getName(),key);
         Map<Object,Double> entries = (Map<Object, Double>) cachePolicy.get(key);
         if (ObjectUtils.isEmpty(entries)){
-            log.info("RedisUtil-AOP => {}: 内存缓存为空，命中Redis，key:{}", joinPoint.getSignature().getName(),key);
+            log.debug("【KaTool::RedisUtil::AOP】RedisUtil-CachePolicy  =>  {}: 内存缓存为空，命中Redis，key:{}", joinPoint.getSignature().getName(),key);
             return aroundByGetResponse(joinPoint);
         }
         Set<Object> values = entries.keySet();
@@ -131,9 +131,9 @@ public class RedisUtilsInterceptor {
             String key = args.get(0).toString();
             Object value = cachePolicy.get(key);
             if (!ObjectUtils.isEmpty(value)){
-                log.info("RedisUtil-AOP => {}: 命中内存缓存，key:{}", joinPoint.getSignature().getName(),key);
+                log.debug("【KaTool::RedisUtil::AOP】RedisUtil-CachePolicy  =>  {}: 命中内存缓存，key:{}", joinPoint.getSignature().getName(),key);
                 cachePolicy.remove(key);
-                log.info("RedisUtil-AOP => {}: 内存缓存删除成功，key:{}", joinPoint.getSignature().getName(),key);
+                log.debug("【KaTool::RedisUtil::AOP】RedisUtil-CachePolicy  =>  {}: 内存缓存删除成功，key:{}", joinPoint.getSignature().getName(),key);
             }
         }
         return aroundByRemoveResponse(joinPoint);
