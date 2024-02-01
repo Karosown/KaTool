@@ -3,4 +3,6 @@ cn.katool.config.cache.CacheConfig,\
 cn.katool.config.store.QiNiuConfig,\
 cn.katool.config.util.LockConfig,\
 cn.katool.config.util.RedisUtilConfig,\
-cn.katool.config.auth.AuthConfig
+cn.katool.config.auth.AuthConfig,\
+cn.katool.config.cache.CaffineConfig,\
+cn.katool.config.cache.EhCacheConfig,\ 

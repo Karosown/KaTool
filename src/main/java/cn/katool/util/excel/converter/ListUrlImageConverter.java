@@ -72,7 +72,7 @@ public class ListUrlImageConverter implements  Converter<List<URL>>{
         return res;
     }
 
-    public Object convertValueToExcelData(List<URL> value){
+    public ArrayList<ImageData> convertValueToExcelData(List<URL> value){
         if (ObjectUtils.isEmpty(value)){
             return null;
         }
@@ -86,7 +86,7 @@ public class ListUrlImageConverter implements  Converter<List<URL>>{
             byte[] bytes = new byte[0];
             try {
                 bytes = IoUtils.toByteArray(inputStream);
-                 inputStream.close();
+                inputStream.close();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

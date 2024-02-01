@@ -72,7 +72,7 @@ public class ExcelUtils {
 
     public ByteArrayOutputStream convert(Class clazz, List data, String sheetName,
                                          List<List<String>> changeColList, List<HashMap<Integer, Integer>> mergeRowMapList,
-                                         List<List<String>> changeRowList, List<HashMap<Integer, Integer>> mergeColMapList) {
+                                         List<List<String>> changeRowList, List<HashMap<Integer, Integer>> mergeColMapList)     {
         // 通过遍历res来进行单元格合并，使用once合并策略
         List<OnceAbsoluteMergeStrategy> mergeStrategyList = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(changeColList)
