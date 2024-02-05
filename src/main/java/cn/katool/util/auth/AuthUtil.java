@@ -15,6 +15,7 @@ import org.springframework.util.ObjectUtils;
 import javax.servlet.http.HttpServletRequest;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -175,13 +176,35 @@ public class AuthUtil<T> {
         return body;
     }
 
-    public static <T> T getPayLoadFromToken(String token) {
+    public T getPayLoadFromToken(String token) {
         if (!verifyToken(token)){
             return null;
         }
         T body = JSONUtil.toBean((JSONObject) JWTUtil.parseToken(token).getPayload("body"),
                 (Class<T>) ((ParameterizedType) AuthUtil.class.getGenericSuperclass()).getActualTypeArguments()[0]
                 );
+        if (body == null) {
+            log.error("【KaTool::AuthUtil::getPayLoadFromToken】Token解析失败，请检查Token是否正确:{}",token);
+            return null;
+        }
+        return body;
+    }
+
+    public static <T> T getPayLoadByToken(String token) throws ClassNotFoundException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        if (!verifyToken(token)){
+            return null;
+        }
+        Type genericSuperclass = AuthUtil.class.getGenericSuperclass();
+        Class<T> clazz;
+        if (genericSuperclass instanceof ParameterizedType){
+            clazz = (Class<T>) ((ParameterizedType) genericSuperclass).getActualTypeArguments()[0];
+        }
+        else {
+            clazz = (Class<T>) Class.forName(genericSuperclass.getTypeName()).getDeclaredConstructors()[0].newInstance().getClass();
+        }
+        T body = JSONUtil.toBean((JSONObject) JWTUtil.parseToken(token).getPayload("body"),
+                clazz
+        );
         if (body == null) {
             log.error("【KaTool::AuthUtil::getPayLoadFromToken】Token解析失败，请检查Token是否正确:{}",token);
             return null;

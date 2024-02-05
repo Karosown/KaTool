@@ -10,10 +10,12 @@
     </parent>
     <groupId>cn.katool</groupId>
     <artifactId>KaTool</artifactId>
-    <version>1.9.6.ALPHA</version>
+    <version>1.9.6.BETA</version>
     <packaging>jar</packaging>
     <name>KaTool</name>
-    <description>KaTool - 一款拥有七牛云文件处理、IP工具、IO工具、图形验证码生成、随机验证码生成、Date工具、Base64工具、函数式接口的Java开发工具类，依赖于SpringBoot框架</description>
+    <description>KaTool -
+        一款拥有七牛云文件处理、IP工具、IO工具、图形验证码生成、随机验证码生成、Date工具、Base64工具、函数式接口的Java开发工具类，依赖于SpringBoot框架
+    </description>
     <!-- https://mvnrepository.com/artifact/com.qiniu/qiniu-java-sdk -->
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -105,7 +107,6 @@
     </dependencies>
 
 
-
     <url>https://github.com/Karosown/KaTool</url>
 
     <!--开源协议...-->
@@ -171,20 +172,20 @@
                     </execution>
                 </executions>
             </plugin>
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-gpg-plugin</artifactId>
-                            <version>1.5</version>
-                            <executions>
-                                <execution>
-                                    <id>sign-artifacts</id>
-                                    <phase>verify</phase>
-                                    <goals>
-                                        <goal>sign</goal>
-                                    </goals>
-                                </execution>
-                            </executions>
-                        </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.5</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
@@ -198,9 +199,6 @@
             <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
     </distributionManagement>
-
-
-
 
 
 </project>

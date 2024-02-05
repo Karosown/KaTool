@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 @NoArgsConstructor
 @ComponentScan("cn.katool.*")
 @Scope("singleton")            //  开启单例模式
-@ConfigurationProperties("katool.redis.lock")
+@ConfigurationProperties("katool.util.redis.lock")
 @DependsOn({"KaTool-Init"})
 public class LockConfig {
 

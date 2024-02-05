@@ -25,7 +25,7 @@ import org.springframework.stereotype.Component;
 @Configuration("ALiYunConfig")
 @Component
 @ToString
-@ConfigurationProperties("katool.store.aliyun")
+@ConfigurationProperties("katool.util.store.aliyun")
 @AllArgsConstructor
 @NoArgsConstructor
 @Data

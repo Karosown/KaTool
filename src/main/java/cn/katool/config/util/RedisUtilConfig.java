@@ -24,7 +24,7 @@ import java.util.function.Supplier;
 
 @Slf4j
 @Configuration("RedisUtilConfig")
-@ConfigurationProperties("katool.redis")
+@ConfigurationProperties("katool.util.redis")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -45,9 +45,6 @@ public class RedisUtilConfig {
     @DependsOn({"KaTool-Init"})
     @ConditionalOnMissingBean({CachePolicy.class})
     public CachePolicy cachePolicy() {
-        if ("default".equals(policy)){
-            policy = cacheConfig.getPolicy();
-        }
         MethodInterface<CachePolicy> runMehtod = REDIS_UTIL_CACHE_POLICY_MAPPER.get(policy);
         return runMehtod.apply();
     }

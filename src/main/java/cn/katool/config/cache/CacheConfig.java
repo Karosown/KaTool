@@ -26,7 +26,7 @@ import java.util.function.Supplier;
 @NoArgsConstructor
 @ComponentScan("cn.katool.*")
 @Configuration("CacheConfig")
-@ConfigurationProperties("katool.cache")
+@ConfigurationProperties("katool.util.cache")
 public class CacheConfig {
 
     public static final String CAFFEINE = "caffeine";

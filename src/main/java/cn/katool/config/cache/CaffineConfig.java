@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @Component
 @Data
-@ConfigurationProperties("katool.cache.caffeine")
+@ConfigurationProperties("katool.util.cache.caffeine")
 public class CaffineConfig {
 
 

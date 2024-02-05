@@ -2,6 +2,7 @@ package cn.katool.util.database.nosql.interceptor;
 
 
 import cn.katool.util.cache.policy.CachePolicy;
+import cn.katool.util.database.nosql.RedisUtils;
 import javafx.util.Pair;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -23,6 +24,9 @@ public class RedisUtilsInterceptor {
     @Resource
     private CachePolicy cachePolicy;
 
+    @Resource
+    private RedisUtils redisUtils;
+
     public CachePolicy getCachePolicy() {
         return this.cachePolicy;
     }
@@ -31,7 +35,9 @@ public class RedisUtilsInterceptor {
         this.cachePolicy = cachePolicy;
     }
     public Boolean casePolicy() throws Throwable {
-        if (ObjectUtils.isEmpty(cachePolicy)||cachePolicy.getClass().getName()=="cn.katool.util.cache.policy.DefaultCachePolicy"){
+        if (ObjectUtils.isEmpty(cachePolicy)||
+                cachePolicy.getClass().getName()=="cn.katool.util.cache.policy.DefaultCachePolicy"||
+                !redisUtils.getOnfCacheInThread()){
             return false;
         }
         return true;
@@ -41,17 +47,28 @@ public class RedisUtilsInterceptor {
     public Object aroundByGet(ProceedingJoinPoint joinPoint) throws Throwable {
         List<Object> args = Arrays.asList(joinPoint.getArgs());
 
-        String key = args.get(0).toString();
+        String hashkey = args.get(0).toString();
         // 如果不采取内存缓存策略，那么直接走Redis
         if (!casePolicy()){
             return aroundByGetResponse(joinPoint);
         }
-        Object value = cachePolicy.get(key);
+        Object value = cachePolicy.get(hashkey);
         if (ObjectUtils.isEmpty(value)){
             return aroundByGetResponse(joinPoint);
         }
-        log.debug("【KaTool::RedisUtil::AOP】RedisUtil-CachePolicy  =>  {}: 命中内存缓存，key:{}", joinPoint.getSignature().getName(),key);
-        log.debug("【KaTool::RedisUtil::AOP】RedisUtil-CachePolicy  =>  key:{} || value：{}", key,value);
+        if (args.size()>1 && value instanceof Map){
+            String key = args.get(1).toString();
+            value = ((Map) value).get(key);
+            log.debug("【KaTool::RedisUtil::AOP】RedisUtil-CachePolicy  =>  {}: 命中内存缓存，hashkey:{} || key: {} ||", joinPoint.getSignature().getName(),hashkey,key);
+            log.debug("【KaTool::RedisUtil::AOP】RedisUtil-CachePolicy  =>  hashkey:{} || key: {} || value：{}", hashkey,key,value);
+        }
+        else {
+            log.debug("【KaTool::RedisUtil::AOP】RedisUtil-CachePolicy  =>  {}: 命中内存缓存，key:{}", joinPoint.getSignature().getName(),hashkey);
+            log.debug("【KaTool::RedisUtil::AOP】RedisUtil-CachePolicy  =>  key:{} || value：{}", hashkey,value);
+        }
+        if (ObjectUtils.isEmpty(value)){
+            return aroundByGetResponse(joinPoint);
+        }
         return value;
     }
 
@@ -163,8 +180,8 @@ public class RedisUtilsInterceptor {
         if (casePolicy()){
             List<Object> args = Arrays.asList(joinPoint.getArgs());
             String key = args.get(0).toString();
-            Object colomun = args.get(1).toString();
-            Object value = args.get(2).toString();
+            Object colomun = args.get(1);
+            Object value = args.get(2);
             Map<Object,Object> map= (Map<Object, Object>) cachePolicy.get(key);
             if (map==null) {
                 synchronized (key.intern()) {
@@ -174,6 +191,24 @@ public class RedisUtilsInterceptor {
                 }
             }
             map.put(colomun,value);
+            cachePolicy.setOrUpdate(key,map);
+        }
+        return aroundBySETResponse(joinPoint);
+    }
+
+    @Around("execution(* cn.katool.util.database.nosql.RedisUtils.delMap(*,*))")
+    public Object aroundByHRemove(ProceedingJoinPoint joinPoint) throws Throwable {
+        if (casePolicy()){
+            List<Object> args = Arrays.asList(joinPoint.getArgs());
+            String key = args.get(0).toString();
+            Object colomun = args.get(1).toString();
+            Map<Object,Object> map= (Map<Object, Object>) cachePolicy.get(key);
+            if (map==null) {
+                return aroundBySETResponse(joinPoint);
+            }
+            if (map.containsKey(colomun)){
+                map.remove(colomun);
+            }
             cachePolicy.setOrUpdate(key,map);
         }
         return aroundBySETResponse(joinPoint);
@@ -264,7 +299,19 @@ public class RedisUtilsInterceptor {
     public Object aroundByGetResponse(ProceedingJoinPoint joinPoint) throws Throwable {
         Object proceed = joinPoint.proceed();
         if (casePolicy()&&!ObjectUtils.isEmpty(proceed)){
-            cachePolicy.setOrUpdate(joinPoint.getArgs()[0].toString(),proceed);
+            List<Object> args = Arrays.asList(joinPoint.getArgs());
+            if (args.size()>1){
+                Map o = (Map) cachePolicy.get(args.get(0));
+                if (null == o){
+                    synchronized (args.get(0).toString().intern()){
+                        o = new ConcurrentHashMap();
+                    }
+                }
+                o.put(args.get(1),proceed);
+                cachePolicy.setOrUpdate(args.get(0).toString(),o);
+            }else if (args.size()==1){
+                cachePolicy.setOrUpdate(args.get(0).toString(),proceed);
+            }
         }
         return proceed;
     }

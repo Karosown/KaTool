@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @Data
-@ConfigurationProperties("katool.cache.ehcache")
+@ConfigurationProperties("katool.util.cache.ehcache")
 public class EhCacheConfig {
 
 

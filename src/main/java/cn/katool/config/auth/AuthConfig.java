@@ -18,7 +18,7 @@ import org.springframework.context.annotation.Configuration;
 @NoArgsConstructor
 @ComponentScan("cn.katool.*")
 @Configuration("AuthConfig")
-@ConfigurationProperties("katool.auth")
+@ConfigurationProperties("katool.util.auth")
 public class AuthConfig{
     private long expTime = 3600 * 24 * 7 * 1000;
     private String saltKey =  "katool.salt.version::" + KaToolInit.version;

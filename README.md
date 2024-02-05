@@ -218,6 +218,9 @@ v1.9.6
 - ALPHA 2024/ 02 / 01
   - Redis缓存策略新增EhCache
   - 新增ExcelUtils
+- BETA 2024/ 02 / 05
+  - 修复Redis缓存问题，修改配置类为util
+  - RedisUtil支持单个线程内关闭Cache缓存策略
 
 v1.9.5
 

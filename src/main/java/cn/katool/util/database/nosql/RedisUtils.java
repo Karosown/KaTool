@@ -14,6 +14,7 @@ package cn.katool.util.database.nosql;
 import cn.hutool.core.util.ObjectUtil;
 import cn.katool.Exception.ErrorCode;
 import cn.katool.Exception.KaToolException;
+import cn.katool.config.util.RedisUtilConfig;
 import cn.katool.util.ScheduledTaskUtil;
 import cn.katool.util.lock.LockUtil;
 import lombok.SneakyThrows;
@@ -38,6 +39,31 @@ import static cn.katool.util.lock.LockUtil.*;
 public class RedisUtils<K, V> {
     @Resource
     private RedisTemplate<K, V> redisTemplate;
+
+    @Resource
+    RedisUtilConfig redisUtilConfig;
+    public Boolean onfCacheInThread(Boolean flag){
+        if ("default".equals(redisUtilConfig.getPolicy())){
+            throw new KaToolException(ErrorCode.PARAMS_ERROR,"请检查是否开启Redis多级缓存策略");
+        }
+        // 获取ThreadLocal
+        ThreadLocal<Boolean> threadLocal = new ThreadLocal<>();
+        threadLocal.set(flag);
+        return threadLocal.get().equals(flag);
+    }
+
+    public Boolean getOnfCacheInThread(){
+        if ("default".equals(redisUtilConfig.getPolicy())){
+            throw new KaToolException(ErrorCode.PARAMS_ERROR,"请检查是否开启Redis多级缓存策略");
+        }
+        // 获取ThreadLocal
+        ThreadLocal<Boolean> threadLocal = new ThreadLocal<>();
+        Boolean aBoolean = threadLocal.get();
+        if (null == aBoolean) {
+            return true;
+        }
+        return aBoolean;
+    }
 
 
     private RedisUtils() {
@@ -355,6 +381,19 @@ public class RedisUtils<K, V> {
             }
         }
         return false;
+    }
+    public <H extends K, HK, HV> Boolean delMap(H hashKey, HK key){
+        if (obtainRedisTemplate() == null) {
+            expMsg(null);
+        }
+        if (redisTemplate.opsForHash().hasKey(hashKey, key)){
+            return true;
+        }
+        redisTemplate.opsForHash().delete(hashKey, key);
+        if (redisTemplate.opsForHash().hasKey(hashKey, key)) {
+            return false;
+        }
+        return true;
     }
 
     public Map getMap(K hashKey) {
