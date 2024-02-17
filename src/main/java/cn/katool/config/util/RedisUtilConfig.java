@@ -37,6 +37,8 @@ public class RedisUtilConfig {
 
     private String policy="default";    // 不写采用默认策略，默认情况下缓存Cache使用的策略
 
+    public static ThreadLocal<Boolean> threadLocal = new  ThreadLocal<>();
+
     private static HashMap<String, MethodInterface<CachePolicy>>
             REDIS_UTIL_CACHE_POLICY_MAPPER = new HashMap<>();
 

@@ -47,9 +47,8 @@ public class RedisUtils<K, V> {
             throw new KaToolException(ErrorCode.PARAMS_ERROR,"请检查是否开启Redis多级缓存策略");
         }
         // 获取ThreadLocal
-        ThreadLocal<Boolean> threadLocal = new ThreadLocal<>();
-        threadLocal.set(flag);
-        return threadLocal.get().equals(flag);
+        RedisUtilConfig.threadLocal.set(flag);
+        return RedisUtilConfig.threadLocal.get().equals(flag);
     }
 
     public Boolean getOnfCacheInThread(){
@@ -57,8 +56,7 @@ public class RedisUtils<K, V> {
             throw new KaToolException(ErrorCode.PARAMS_ERROR,"请检查是否开启Redis多级缓存策略");
         }
         // 获取ThreadLocal
-        ThreadLocal<Boolean> threadLocal = new ThreadLocal<>();
-        Boolean aBoolean = threadLocal.get();
+        Boolean aBoolean = RedisUtilConfig.threadLocal.get();
         if (null == aBoolean) {
             return true;
         }
@@ -385,9 +383,6 @@ public class RedisUtils<K, V> {
     public <H extends K, HK, HV> Boolean delMap(H hashKey, HK key){
         if (obtainRedisTemplate() == null) {
             expMsg(null);
-        }
-        if (redisTemplate.opsForHash().hasKey(hashKey, key)){
-            return true;
         }
         redisTemplate.opsForHash().delete(hashKey, key);
         if (redisTemplate.opsForHash().hasKey(hashKey, key)) {
