@@ -11,7 +11,9 @@
 package cn.katool.util.database.nosql;
 
 
+import cn.hutool.core.thread.ThreadUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.RandomUtil;
 import cn.katool.Exception.ErrorCode;
 import cn.katool.Exception.KaToolException;
 import cn.katool.config.util.RedisUtilConfig;
@@ -111,15 +113,16 @@ public class RedisUtils<K, V> {
     }
 
     public boolean tryLock(Object lockObj) {
+        ThreadUtil.sleep(RandomUtil.randomInt(100,500));
         Thread thread = Thread.currentThread();
-        boolean state = lockUtil.luaToRedisByLock("tryLock:" + lockObj.toString(), 30L, TimeUnit.SECONDS, new String[1]) == null;
+        boolean state = lockUtil.luaToRedisByLock("Lock:" + lockObj.toString(), 30L, TimeUnit.SECONDS, new String[1]) == null;
         if (state) {
             ScheduledFuture<?> scheduledFuture = ScheduledTaskUtil.submitTask(new Runnable() {
                 @SneakyThrows
                 @Override
                 public void run() {
 
-                    boolean alive = thread.isAlive() || thread.isInterrupted();
+                    boolean alive = thread.isAlive() || (thread.isInterrupted());
                     ScheduledFuture future = getThreadWatchDog().get(thread.getId());
                     if (alive) {
                         log.debug("Thread ID:{} 线程仍然存活，看门狗续期中...", thread.getId());
@@ -151,10 +154,12 @@ public class RedisUtils<K, V> {
             }
         }
 //                由于这里有了可重入锁，不应该直接删除Boolean aBoolean = redisTemplate.delete("Lock:" + obj.toString());
-        Long remainLocks = lockUtil.luaToRedisByUnLock("tryLock:" + lockObj.toString(), Thread.currentThread());
-        if (remainLocks == 0) {
-            getThreadWatchDog().get(Thread.currentThread().getId()).cancel(true);
-            getThreadWatchDog().remove(Thread.currentThread().getId());
+        Long remainLocks = lockUtil.luaToRedisByUnLock("Lock:" + lockObj.toString(), Thread.currentThread());
+        if (null != remainLocks && remainLocks == 0) {
+            if (getThreadWatchDog().contains(Thread.currentThread().getId())){
+                getThreadWatchDog().get(Thread.currentThread().getId()).cancel(true);
+                getThreadWatchDog().remove(Thread.currentThread().getId());
+            }
         }
         log.debug("katool=> LockUntil => unDistributedLock:{} isdelete:{} watchDog is cancel and drop", lockObj.toString(), true);
         return remainLocks == 0;

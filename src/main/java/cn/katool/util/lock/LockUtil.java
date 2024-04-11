@@ -274,7 +274,7 @@ public class LockUtil {
                 }
 //                由于这里有了可重入锁，不应该直接删除Boolean aBoolean = redisTemplate.delete("Lock:" + obj.toString());
                 Long remainLocks = luaToRedisByUnLock("Lock:" + obj.toString(),thread);
-                if (remainLocks == 0){
+                if (null != remainLocks && remainLocks == 0){
                         threadWatchDog.get(Thread.currentThread().getId()).cancel(true);
                         threadWatchDog.remove(Thread.currentThread().getId());
                 }

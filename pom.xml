@@ -10,7 +10,7 @@
     </parent>
     <groupId>cn.katool</groupId>
     <artifactId>KaTool</artifactId>
-    <version>1.9.6.BETA</version>
+    <version>1.9.6.GAMA</version>
     <packaging>jar</packaging>
     <name>KaTool</name>
     <description>KaTool -

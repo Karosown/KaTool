@@ -221,7 +221,8 @@ v1.9.6
 - BETA 2024/ 02 / 05
   - 修复Redis缓存问题，修改配置类为util
   - RedisUtil支持单个线程内关闭Cache缓存策略
-
+- GAMA 2024/ 04 / 10
+  - 修复分布式锁tryLock状态获取问题
 v1.9.5
 
 - RELEASE 2024 / 01 /14
