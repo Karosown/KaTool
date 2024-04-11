@@ -1,4 +1,4 @@
-![KaTool](http://gd.7n.cdn.wzl1.top/typora/img/KaTool.png)
+![KaTool](http://7n.cdn.wzl.fyi/typora/img/KaTool.png)
 
 &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;![SpringBoot-2.7.0](https://img.shields.io/badge/SpringBoot-2.7.0-green)&emsp;&emsp;&emsp;![Hutool-5.8.10](https://img.shields.io/badge/Hutool-5.8.10-green)
 
@@ -40,7 +40,7 @@ git clone https://github.com/Karosown/KaTool.git
 #### 打开项目
 
 选择Maven install
-![image-20231123141406759](http://gd.7n.cdn.wzl1.top/typora/img/image-20231123141406759.png)
+![image-20231123141406759](http://7n.cdn.wzl.fyi/typora/img/image-20231123141406759.png)
 
 ## Application.yml配置说明
 
@@ -300,15 +300,15 @@ v1.9.0 2023 / 09 /08 - 2023 / 09 / 11
 
   20个线程
 
-  ![image-20230910194932722](http://gd.7n.cdn.wzl1.top/typora/img/image-20230910194932722.png)
+  ![image-20230910194932722](http://7n.cdn.wzl.fyi/typora/img/image-20230910194932722.png)
 
-  ![image-20230910194945932](http://gd.7n.cdn.wzl1.top/typora/img/image-20230910194945932.png)
+  ![image-20230910194945932](http://7n.cdn.wzl.fyi/typora/img/image-20230910194945932.png)
 
   150个线程
 
-  ![image-20230910195006933](http://gd.7n.cdn.wzl1.top/typora/img/image-20230910195006933.png)
+  ![image-20230910195006933](http://7n.cdn.wzl.fyi/typora/img/image-20230910195006933.png)
 
-  ![image-20230910195030253](http://gd.7n.cdn.wzl1.top/typora/img/image-20230910195030253.png)
+  ![image-20230910195030253](http://7n.cdn.wzl.fyi/typora/img/image-20230910195030253.png)
 
 v1.8.1 2023 / 08 / 19 / 17：24<br>
 优化分布式锁：采用 自旋锁+同步锁，但是并没有解决公平竞争锁的问题，如果要解决可以使用消息队列<br>
