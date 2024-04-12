@@ -44,12 +44,14 @@ public class RedisUtils<K, V> {
 
     @Resource
     RedisUtilConfig redisUtilConfig;
+    private static ThreadLocal<Boolean> threadLocal = new ThreadLocal<>();
+
+
     public Boolean onfCacheInThread(Boolean flag){
         if ("default".equals(redisUtilConfig.getPolicy())){
             throw new KaToolException(ErrorCode.PARAMS_ERROR,"请检查是否开启Redis多级缓存策略");
         }
         // 获取ThreadLocal
-        ThreadLocal<Boolean> threadLocal = new ThreadLocal<>();
         threadLocal.set(flag);
         return threadLocal.get().equals(flag);
     }
