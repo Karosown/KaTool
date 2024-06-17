@@ -2,6 +2,7 @@ package cn.katool.util.classes;
 
 import cn.hutool.extra.spring.SpringUtil;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
@@ -62,11 +63,20 @@ public class SpringContextUtils implements ApplicationContextAware {
         SpringUtil.registerBean(beanName, bean);
     }
 
+    public static void regBeanNotAutoWire(String beanName, Object bean){
+        if (SpringContextUtils.contain(beanName)){
+            SpringContextUtils.unregBean(beanName);
+        }
+        ConfigurableListableBeanFactory configurableBeanFactory = SpringUtil.getConfigurableBeanFactory();
+        configurableBeanFactory.registerSingleton(beanName,bean);
+    }
+
     public static void unregBean(String beanName){
         if (!SpringContextUtils.contain(beanName)) {
             return;
         }
         SpringUtil.unregisterBean(beanName);
     }
+
 
 }

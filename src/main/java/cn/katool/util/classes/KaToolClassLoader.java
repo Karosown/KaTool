@@ -1,8 +1,24 @@
 package cn.katool.util.classes;
 
+import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.io.resource.ClassPathResource;
+import cn.hutool.core.io.resource.ResourceUtil;
+import cn.hutool.core.net.NetUtil;
+import cn.hutool.core.util.URLUtil;
+import cn.hutool.http.HttpUtil;
+import cn.katool.Exception.ErrorCode;
+import cn.katool.Exception.KaToolException;
+import cn.katool.util.io.FileUtils;
+import com.alibaba.excel.util.StringUtils;
+import org.aspectj.apache.bcel.util.ClassPath;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Arrays;
 
 public class KaToolClassLoader extends ClassLoader{
     private String classPath;
@@ -18,26 +34,40 @@ public class KaToolClassLoader extends ClassLoader{
         super(privateLoader);
         this.classPath = classPath;
     }
-
     @Override
     protected Class<?> findClass(String name) throws ClassNotFoundException {
+        return findClass("",name);
+    }
+
+
+    protected Class<?> findClass(String packageName,String name) throws ClassNotFoundException {
+        return findClass(packageName,name,true);
+    }
+
+    protected Class<?> findClass(String packageName,String name, boolean isThrow)  {
         byte[] bytes;
         Class<?> clazz;
         try{
-            bytes = getClassByte(name);
+            bytes = getClassByte(packageName,name);
             //继承ClassLoader是为了用defineClass方法。
-            clazz = defineClass(name, bytes, 0, bytes.length);
-            return clazz;
+            clazz = defineClass(packageName+"."+name, bytes, 0, bytes.length);
         }catch (Exception e){
-
+            throw new KaToolException(ErrorCode.FILE_ERROR, Arrays.toString(e.getStackTrace()));
         }
-        return super.findClass(name);
+        return clazz;
     }
 
-    private byte[] getClassByte(String name){
-        name = name.replaceAll("\\.","/");
-        String realPath = this.classPath+name+".class";
-        File f = new File(realPath);
+    private byte[] getClassByte(String packageName,String name){
+        String realPath = this.classPath;
+        File f;
+
+        if (HttpUtil.isHttp(realPath)||HttpUtil.isHttps(realPath)){
+            String path = packageName.replace(".", "/");
+            f = FileUtils.downloadFile(realPath, this.getClass().getClassLoader().getResource("").getPath() +path,name+".class");
+        }
+        else {
+            f = new File(realPath);
+        }
         if(f.exists()){
             byte[] bytes = new byte[0];
 
@@ -55,7 +85,6 @@ public class KaToolClassLoader extends ClassLoader{
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            System.out.println("从本地读取【"+realPath+"】完成");
             return  bytes;
         }else{
             return null;
