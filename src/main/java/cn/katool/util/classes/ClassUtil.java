@@ -3,6 +3,7 @@ package cn.katool.util.classes;
 import cn.hutool.extra.spring.SpringUtil;
 import cn.katool.Exception.ErrorCode;
 import cn.katool.Exception.KaToolException;
+import com.qiniu.util.UrlUtils;
 import javafx.util.Pair;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -13,6 +14,8 @@ import javax.tools.ToolProvider;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Objects;
 
 @Slf4j
@@ -22,17 +25,17 @@ public class ClassUtil{
     Integer tryLimit=3;
 
     ThreadLocal<Integer> threadLocal=new ThreadLocal();
-
-    public Class urlLoader(String url, String className){
+    public Class urlLoader(String url, String packageName,String className){
         Class clazz = null;
+        String fileName = className;
+        className = packageName+"."+className;
         String resouceUrl = url.replace(
                 className.substring(0, className.lastIndexOf('.')).replace('.', '/') + "/",
                 "");
-        // 使用自定义类加载，设置父类加载器是当前线程上下文的类加载器
         KaToolClassLoader classLoader = new KaToolClassLoader(
                 resouceUrl,Thread.currentThread().getContextClassLoader());
         try {
-            if ((clazz=classLoader.findClass(className)) != null){
+            if ((clazz=classLoader.findClass(packageName,fileName)) != null){
                 return clazz;
             }
             String replace = null;
@@ -42,30 +45,33 @@ public class ClassUtil{
             else {
                 replace = className;
             }
-            log.info("【KaTool::ClassUtil::urlLoader】url:{}",url);
+            log.info("url:{}",url);
             String fileDir = (url+ ((url.charAt(url.length()-1)=='/'||url.charAt(url.length()-1)=='\\')?"":"\\")  + replace.concat(".class")).replace("/","\\");
-            log.info("【KaTool::ClassUtil::urlLoader】class file dir:{}",fileDir);
+            log.info("class file dir:{}",fileDir);
             File file = new File(fileDir);
             // 如果class文件不存在，Sleep阻塞等待3次，再进行判断
             if (!file.exists()){
-                if (threadLocal.get()==null||threadLocal.get()==0){
+                Integer integer = threadLocal.get();
+                if (integer ==null|| integer ==0){
                     threadLocal.set(1);
                 }
-                if (Objects.equals(threadLocal.get(), tryLimit)){
-                    log.info("【KaTool::ClassUtil::urlLoader】{}加载错误",file.getAbsolutePath());
-                    throw new KaToolException(ErrorCode.OPER_ERROR,"【KaTool::ClassUtil::urlLoader】加载错误，请检查.class文件是否正确");
+                if (Objects.equals(integer, tryLimit)){
+                    log.info("{}加载错误",file.getAbsolutePath());
+                    throw new KaToolException(ErrorCode.FILE_ERROR,"加载错误，请检查.class文件是否正确");
                 }
-                threadLocal.set(threadLocal.get()+1);
-                Thread.sleep(10000L/threadLocal.get());
-                return urlLoader(url,className);
+                threadLocal.set(integer +1);
+                Thread.sleep(10000L/ integer);
+                Class aClass = urlLoader(url,packageName, className);
+                if (Objects.nonNull(integer)){
+                    threadLocal.remove();   // 进行清理，避免后续线程错误
+                }
+                return aClass;
             }
             clazz = classLoader.findClass(className);
             Class.forName(className);
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        } catch (KaToolException e) {
             throw new RuntimeException(e);
         }
         return clazz;
